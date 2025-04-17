@@ -1,0 +1,5 @@
+{
+  "SCAN_LOCATION_IS_TOO_FAR": "Punkt zeskanowany zbyt daleko od prawdziwego punktu",
+  "TIME_BETWEEN_LAST_SCANNED_CHECKPOINT": "Czas pomiędzy skanowaniami jest zbyt krótki",
+  "RUNNING_TIME_EXCEEDED_LIMIT": "Czas biegu jest dłuższy niż maksymalny czas"
+}
