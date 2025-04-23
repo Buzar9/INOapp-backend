@@ -7,6 +7,7 @@ import java.io.File
 
 @Component
 class TranslationService {
+    private val objectMapper = jacksonObjectMapper()
 
     fun translate(category: String, key: String): String {
         val translations = loadTranslations(category)
@@ -14,8 +15,7 @@ class TranslationService {
     }
 
     private fun loadTranslations(category: String): Map<String, String> {
-        val file = File("/Users/m.buzarewicz/IdeaProjects/INOapp-backend/INOapp/src/main/resources/translations/${category}.json")
-        val objectMapper = jacksonObjectMapper()
+        val file = File("INOapp/src/main/resources/translations/${category}.json")
         return objectMapper.readValue(file)
     }
 }
