@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Service
 import java.io.ByteArrayInputStream
-import java.io.FileInputStream
-import java.io.InputStream
 import java.nio.charset.StandardCharsets
 
 
@@ -25,7 +23,7 @@ class FirebaseInitialization(
 
         val credentialsStream = ByteArrayInputStream(firebaseCredentials.toByteArray(StandardCharsets.UTF_8))
         val credentials = GoogleCredentials.fromStream(credentialsStream)
-        val options = FirebaseOptions.Builder()
+        val options = FirebaseOptions.builder()
             .setCredentials(credentials)
             .build()
         if (FirebaseApp.getApps().isEmpty()) {

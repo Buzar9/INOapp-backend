@@ -1,24 +1,16 @@
-# Etap buildowania
-FROM openjdk:17-jdk-slim AS build
-WORKDIR /app
+# Krok 1: Używamy lekkiego obrazu bazowego z JRE
+FROM openjdk:21-jdk-slim
 
-# Skopiuj pliki konfiguracyjne osobno, by cache był używany
-COPY INOapp/settings.gradle.kts INOapp/build.gradle.kts ./
-COPY INOapp/gradlew ./gradlew
-COPY INOapp/gradle ./gradle
+# Krok 2: Instalujemy pakiet gdal-bin
+# Używamy `\` do łączenia poleceń w jednej linii, co jest standardową praktyką
+RUN apt-get update && \
+    apt-get install -y gdal-bin && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Ustaw uprawnienia do wrappera
-RUN chmod +x ./gradlew
+# Krok 3: Określamy argument JAR_FILE
+ARG JAR_FILE=build/libs/*.jar
+COPY ${JAR_FILE} app.jar
 
-# Skopiuj resztę projektu
-COPY INOapp/src ./src
-
-# Buduj aplikację
-RUN ./gradlew bootJar --no-daemon
-
-# Etap uruchamiania
-FROM openjdk:17-jdk-slim
-WORKDIR /app
-COPY --from=build /app/build/libs/*.jar app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Krok 4: Uruchamiamy aplikację Spring Boot
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]

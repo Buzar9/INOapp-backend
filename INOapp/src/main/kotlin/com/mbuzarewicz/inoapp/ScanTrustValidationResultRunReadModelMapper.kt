@@ -1,14 +1,11 @@
 package com.mbuzarewicz.inoapp
 
 import com.mbuzarewicz.inoapp.ScanTrustValidationResult.*
+import com.mbuzarewicz.inoapp.TimePresenter.Companion.formatToDailyHour
 import com.mbuzarewicz.inoapp.ValidationResult.*
 import com.mbuzarewicz.inoapp.ValidationResultStatus.*
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.time.Duration
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 class ScanTrustValidationResultRunReadModelMapper {
 
@@ -50,8 +47,8 @@ class ScanTrustValidationResultRunReadModelMapper {
     private fun map(scanValidation: TooShortTimeBetweenScans): ValidationResult {
         return with(scanValidation) {
             val details = mapOf(
-                "lastCheckpointTimestamp" to lastCheckpointTimestamp.toDailyHourFormat(),
-                "scanCheckpointTimestamp" to scanCheckpointTimestamp.toDailyHourFormat()
+                "lastCheckpointTimestamp" to formatToDailyHour(lastCheckpointTimestamp),
+                "scanCheckpointTimestamp" to formatToDailyHour(scanCheckpointTimestamp)
             )
 
             when (resultStatus) {
@@ -76,7 +73,7 @@ class ScanTrustValidationResultRunReadModelMapper {
     private fun map(scanValidation: RunningTimeExceededLimit): ValidationResult {
         return with(scanValidation) {
             val details = mapOf(
-                "mainRunTime" to mainRunTime.toAbsoluteHoursMinutesSecondsFormat()
+                "mainRunTime" to TimePresenter.formatToAbsoluteHoursMinutesSeconds(mainRunTime)
             )
 
             when (resultStatus) {
@@ -99,20 +96,4 @@ class ScanTrustValidationResultRunReadModelMapper {
     }
 
     private fun Double.prepareLengthMeasurement() = BigDecimal(this).setScale(1, RoundingMode.HALF_UP).toString()
-
-    private fun Long.toDailyHourFormat(): String {
-        val zoneId = ZoneId.of("Europe/Warsaw")
-        val dateTime = Instant.ofEpochMilli(this).atZone(zoneId).toLocalDateTime()
-        return dateTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
-    }
-
-    private fun Long.toAbsoluteHoursMinutesSecondsFormat(): String {
-        val seconds = this / 1000
-        val duration = Duration.ofSeconds(seconds)
-        val hours = duration.toHours()
-        val minutes = duration.toMinutes() % 60
-        val secs = duration.seconds % 60
-
-        return "%02d:%02d:%02d".format(hours, minutes, secs)
-    }
 }

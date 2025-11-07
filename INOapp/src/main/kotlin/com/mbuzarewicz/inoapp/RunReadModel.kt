@@ -1,18 +1,16 @@
 package com.mbuzarewicz.inoapp
 
+import com.mbuzarewicz.inoapp.domain.model.ControlPoint
+
 data class RunReadModel(
-    val runId: String,
-    val nickname: String,
-    val team: String,
-    val routeName: String,
-    val competitionCategory: String,
+    val id: String,
+    val categoryId: String,
+    val competitionId: String,
+    val controlPoints: List<ControlPoint>,
+    val participantName: String,
+    val participantUnit: String,
     val status: RunStatus,
-    val startTime: Long,
-    val finishTime: Long,
-    val mainTime: Long,
-    val totalTime: Long,
-    val visitedCheckpointsNumber: Int,
-    val visitedCheckpoints: MutableList<Checkpoint>,
-    val stationsValidationResults: MutableMap<CheckpointId, List<ValidationResult>>,
-    val penalties: MutableList<Penalty>,
+    val startTime: Long? = null,
+    val finishTime: Long? = null,
+    val mainTime: Long? = null,
 )

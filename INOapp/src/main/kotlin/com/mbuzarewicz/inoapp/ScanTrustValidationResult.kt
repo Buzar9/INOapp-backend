@@ -1,6 +1,7 @@
 package com.mbuzarewicz.inoapp
 
-import com.mbuzarewicz.inoapp.StationValidationType.*
+import com.mbuzarewicz.inoapp.domain.model.StationValidationType
+import com.mbuzarewicz.inoapp.domain.model.StationValidationType.*
 
 sealed class ScanTrustValidationResult(val type: StationValidationType, val resultStatus: ValidationResultStatus) {
     class TooFarScan(
