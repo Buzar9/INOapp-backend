@@ -1,16 +1,30 @@
-# Krok 1: Używamy lekkiego obrazu bazowego z JRE
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy AS build
 
-# Krok 2: Instalujemy pakiet gdal-bin
-# Używamy `\` do łączenia poleceń w jednej linii, co jest standardową praktyką
+WORKDIR /app
+
+COPY gradlew ./
+COPY gradle/ ./gradle/
+
+RUN chmod +x ./gradlew
+
+COPY build.gradle.kts settings.gradle.kts ./
+
+COPY src/ ./src/
+
+RUN ./gradlew bootJar -x test
+
+
+FROM eclipse-temurin:21-jre-jammy
+
 RUN apt-get update && \
-    apt-get install -y gdal-bin && \
+    apt-get install -y --no-install-recommends gdal-bin && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Krok 3: Określamy argument JAR_FILE
-ARG JAR_FILE=build/libs/*.jar
-COPY ${JAR_FILE} app.jar
+WORKDIR /app
 
-# Krok 4: Uruchamiamy aplikację Spring Boot
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+COPY --from=build /app/build/libs/*.jar app.jar
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
