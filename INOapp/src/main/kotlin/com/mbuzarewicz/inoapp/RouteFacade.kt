@@ -34,7 +34,8 @@ class RouteFacade(
             name = command.routeName,
             stations = emptyList(),
             backgroundMapId = command.backgroundMapId,
-            competitionId = command.competitionId
+            competitionId = command.competitionId,
+            isActive = true
         )
 
         routeRepository.save(route)
@@ -55,9 +56,12 @@ class RouteFacade(
         return routeMapper.mapToView(updatedRoute, backgroundMap)
     }
 
-    //    dodo przy usuwaniu, trzeba zrobic tak, żeby oznaczyc ja jako nieaktywną??, żeby wszystko od tego zależne nadal moglo działać
-    fun deleteRoute(command: DeleteRouteCommand): List<RouteView> {
-        routeRepository.deleteById(command.routeId)
+    fun deactivate(command: DeleteRouteCommand): List<RouteView> {
+        val route = routeRepository.getById(command.routeId)
+        if (route == null) throw Exception("dodo")
+
+        val updatedRoute = route.copy(isActive = false)
+        routeRepository.save(updatedRoute)
 
         return getAllView(command.competitionId)
     }
@@ -156,14 +160,14 @@ class RouteFacade(
         val route = routeRepository.getById(query.routeId)!!
         val backgroundMap = backgroundMapFacade.getById(route.backgroundMapId)!!
 
-        return route?.let { routeMapper.mapToView(route, backgroundMap) }
+        return route.let { routeMapper.mapToView(route, backgroundMap) }
     }
 
     private fun getAllView(competitionId: String): List<RouteView> {
         val routes = routeRepository.getAll(competitionId)
 
-        return routes.map {
-            routeMapper.mapToView(it, backgroundMapFacade.getById(it.backgroundMapId)!!)
+        return routes.filter { it.isActive }
+            .map { routeMapper.mapToView(it, backgroundMapFacade.getById(it.backgroundMapId)!!)
         }
     }
 }

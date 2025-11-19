@@ -14,6 +14,7 @@ class PersistableRouteMapper {
                 stations = stations.map { stationMapper.mapToPersistableEntity(it) },
                 backgroundMapId = backgroundMapId,
                 competitionId = competitionId,
+                active = isActive,
             )
         }
     }
@@ -26,6 +27,7 @@ class PersistableRouteMapper {
                 stations = stations.map { stationMapper.mapToDomainEntity(it) },
                 backgroundMapId = backgroundMapId,
                 competitionId = competitionId,
+                isActive = active,
             )
         }
     }

@@ -6,4 +6,5 @@ data class Route(
     val stations: List<Station>,
     val backgroundMapId: String,
     val competitionId: String,
+    val isActive: Boolean,
 )

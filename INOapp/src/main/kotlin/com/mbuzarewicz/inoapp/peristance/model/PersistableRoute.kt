@@ -9,4 +9,5 @@ data class PersistableRoute(
     val stations: List<PersistableStation> = listOf(),
     val backgroundMapId: String = "",
     val competitionId: String = "",
+    val active: Boolean = true,
 )
