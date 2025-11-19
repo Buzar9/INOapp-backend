@@ -63,7 +63,7 @@ class BackofficeRouteController(
     fun deleteRoute(
         @RequestBody request: DeleteRouteRequest
     ): ResponseEntity<List<RouteView>> {
-        val updatedRoute = routeFacade.deleteRoute(request.toCommand())
+        val updatedRoute = routeFacade.deactivate(request.toCommand())
         return ResponseEntity.status(200).body(updatedRoute)
     }
 

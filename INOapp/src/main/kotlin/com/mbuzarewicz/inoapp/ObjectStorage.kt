@@ -8,5 +8,7 @@ interface ObjectStorage {
         key: String,
         contentType: String? = null,
         cacheControl: String? = null
-    ): String
+    )
+
+    fun deleteFile(key: String): Boolean
 }

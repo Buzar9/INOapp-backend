@@ -10,11 +10,12 @@ class PersistableBackgroundMapMapper {
             PersistableBackgroundMap(
                 id = id,
                 name = name,
-                fileUrl = fileUrl,
+                fileSize = fileSize,
                 minZoom = minZoom,
                 maxZoom = maxZoom,
                 northEast = PersistableLocationMapper().mapToPersistableEntity(northEast),
                 southWest = PersistableLocationMapper().mapToPersistableEntity(southWest),
+                active = isActive,
             )
         }
     }
@@ -24,11 +25,12 @@ class PersistableBackgroundMapMapper {
             BackgroundMap(
                 id = id,
                 name = name,
-                fileUrl = fileUrl,
+                fileSize = fileSize,
                 minZoom = minZoom,
                 maxZoom = maxZoom,
                 northEast = PersistableLocationMapper().mapToDomainEntity(northEast),
                 southWest = PersistableLocationMapper().mapToDomainEntity(southWest),
+                isActive = active,
             )
         }
     }

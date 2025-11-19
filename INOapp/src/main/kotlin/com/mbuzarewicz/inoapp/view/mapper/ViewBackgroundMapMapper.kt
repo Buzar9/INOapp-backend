@@ -20,7 +20,7 @@ class ViewBackgroundMapMapper {
             BackgroundMapView(
                 id = id,
                 name = name,
-                fileUrl = fileUrl,
+                fileSize = fileSize,
                 minZoom = minZoom,
                 maxZoom = maxZoom,
                 northEast = northEast.let { listOf(it.lat, it.lng) },

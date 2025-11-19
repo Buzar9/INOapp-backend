@@ -17,6 +17,7 @@ class Run private constructor(
     val competitionId: String,
     val stations: MutableList<Station>,
     val controlPoints: MutableList<ControlPoint>,
+//    dodo niby samotna wyspa ale kategorie to musi znac
     var categoryId: String,
     var status: RunStatus,
 ) {

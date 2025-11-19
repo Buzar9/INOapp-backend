@@ -3,6 +3,7 @@ package com.mbuzarewicz.inoapp.controller.backoffice
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.BackgroundMapFacade
 import com.mbuzarewicz.inoapp.command.AddBackgroundMapCommand
+import com.mbuzarewicz.inoapp.command.DeleteBackgroundMapCommand
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapOptionsQuery
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapQuery
 import com.mbuzarewicz.inoapp.view.model.BackgroundMapOptionView
@@ -15,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
 
 @RequestMapping(path = ["/backoffice/background_maps"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @RestController
@@ -102,4 +102,18 @@ class BackofficeBackgroundMapController(
     )
 
     private fun GetAllBackgroundMapRequest.toQuery() = GetAllBackgroundMapQuery(competitionId)
+
+    @PostMapping("/delete")
+    fun delete(
+        @RequestBody request: DeleteBackgroundMapRequest
+    ) {
+        val options = backgroundMapFacade.deactivateAndDeleteFile(request.toCommand())
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class DeleteBackgroundMapRequest(
+        val backgroundMapId: String,
+    )
+
+    private fun DeleteBackgroundMapRequest.toCommand() = DeleteBackgroundMapCommand(backgroundMapId)
 }
