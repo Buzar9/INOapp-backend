@@ -118,6 +118,26 @@ class RouteFacade(
         return routeMapper.mapToView(updatedRoute, backgroundMap)
     }
 
+    fun toggleStationMount(command: ToggleStationMountCommand): RouteView {
+        val route = routeRepository.getById(command.routeId)
+
+        if (route == null) throw Exception("dodo")
+
+        val updatedStations = route.stations.map { station ->
+            if (station.id == command.stationId) {
+                station.copy(isMounted = !station.isMounted)
+            } else {
+                station
+            }
+        }
+
+        val updatedRoute = route.copy(stations = updatedStations)
+        routeRepository.save(updatedRoute)
+        val backgroundMap = backgroundMapFacade.getById(updatedRoute.backgroundMapId)!!
+
+        return routeMapper.mapToView(updatedRoute, backgroundMap)
+    }
+
     fun getAllView(query: GetAllRoutesQuery): List<RouteView> {
         return getAllView(query.competitionId)
     }

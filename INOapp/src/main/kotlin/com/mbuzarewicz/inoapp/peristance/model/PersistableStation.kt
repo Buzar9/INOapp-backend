@@ -5,5 +5,6 @@ data class PersistableStation(
     val name: String = "",
     val type: String = "",
     val location: PersistableLocation = PersistableLocation(),
-    val note: String = ""
+    val note: String = "",
+    val mounted: Boolean = false
 )

@@ -20,7 +20,8 @@ class ViewGeoMapper {
                     "name" to name,
                     "type" to TranslateService.translate("station-type", type.toString()),
                     "note" to note,
-                    "accuracy" to location.accuracy.toString()
+                    "accuracy" to location.accuracy.toString(),
+                    "isMounted" to isMounted.toString()
                 )
             )
         }

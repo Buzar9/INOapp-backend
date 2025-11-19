@@ -16,6 +16,7 @@ class PersistableStationMapper {
                 type = type.toString(),
                 location = locationMapper.mapToPersistableEntity(location),
                 note = note,
+                mounted = isMounted
             )
         }
     }
@@ -40,6 +41,7 @@ class PersistableStationMapper {
                 type = StationType.valueOf(type),
                 location = locationMapper.mapToDomainEntity(location),
                 note = note,
+                isMounted = mounted
             )
         }
     }

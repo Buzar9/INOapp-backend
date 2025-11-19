@@ -5,5 +5,6 @@ data class Station(
     val name: String,
     val type: StationType,
     val location: Location,
-    val note: String
+    val note: String,
+    val isMounted: Boolean = false
 )

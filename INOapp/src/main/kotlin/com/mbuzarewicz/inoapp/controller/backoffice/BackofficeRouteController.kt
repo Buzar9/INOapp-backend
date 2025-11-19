@@ -137,6 +137,23 @@ class BackofficeRouteController(
 
     private fun DeleteStationRequest.toCommand() = DeleteStationCommand(routeId, stationId)
 
+    @PostMapping(value = ["/toggle_station_mount"])
+    @ResponseStatus(HttpStatus.OK)
+    fun toggleStationMount(
+        @RequestBody request: ToggleStationMountRequest
+    ): ResponseEntity<RouteView> {
+        val updatedRoute = routeFacade.toggleStationMount(request.toCommand())
+        return ResponseEntity.status(200).body(updatedRoute)
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class ToggleStationMountRequest(
+        val routeId: String,
+        val stationId: String,
+    )
+
+    private fun ToggleStationMountRequest.toCommand() = ToggleStationMountCommand(routeId, stationId)
+
     @PostMapping
     fun getAll(
         @RequestBody request: GetAllRoutesRequest
