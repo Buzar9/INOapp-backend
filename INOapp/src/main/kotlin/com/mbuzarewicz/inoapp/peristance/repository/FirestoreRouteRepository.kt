@@ -40,6 +40,16 @@ class FirestoreRouteRepository(
         return snapshot.documents.map { it.toObject(PersistableRoute::class.java) }
     }
 
+    fun getAllActive(competitionId: String): List<PersistableRoute> {
+        val query = firestore.collection(collectionName)
+            .whereEqualTo("competitionId", competitionId)
+            .whereEqualTo("active", true)
+        val future = query.get()
+        val snapshot = future.get()
+
+        return snapshot.documents.map { it.toObject(PersistableRoute::class.java) }
+    }
+
     fun save(persistableRoute: PersistableRoute) {
         val id = persistableRoute.id
         val documentReference = if (id == null) {

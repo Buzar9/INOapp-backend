@@ -138,7 +138,8 @@ class BackgroundMapFacade(
 
     fun getBackgroundMapOptions(query: GetAllBackgroundMapOptionsQuery): List<BackgroundMapOptionView> {
         val backgroundMaps = repository.getAll(query.competitionId)
-        return backgroundMaps.map { viewBackgroundMapMapper.mapToOptionView(it) }
+        return backgroundMaps.filter { it.isActive }
+                                .map { viewBackgroundMapMapper.mapToOptionView(it) }
     }
 
     fun getAll(query: GetAllBackgroundMapQuery): List<BackgroundMapView> {

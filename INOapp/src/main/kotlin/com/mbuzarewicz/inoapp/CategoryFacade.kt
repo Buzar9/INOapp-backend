@@ -23,13 +23,16 @@ class CategoryFacade(
 
     //    dodo założyć unikalne name dla danej competition
     fun create(command: CreateCategoryCommand) {
+        val route = routeFacade.getRoute(command.routeId) ?: throw IllegalArgumentException("Route with id ${command.routeId} not found")
+
         val category = Category(
             id = UUID.randomUUID().toString(),
             name = command.name,
             competitionId = command.competitionId,
             routeId = command.routeId,
-            maxTime = command.maxTime,
-            backgroundMapId = command.backgroundMapId
+//            dodo mock
+            maxTime = 4,
+            backgroundMapId = route.backgroundMapId
         )
         categoryRepository.save(category)
     }

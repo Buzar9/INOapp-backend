@@ -84,7 +84,7 @@ class RaceResultViewFacade(
                             )
                         ),
                         GeoView(
-                            geometry = GeoGeometryView(coordinates = listOf(0.0, 0.0)),
+                            geometry = GeometryView(coordinates = listOf(0.0, 0.0)),
                             properties = mapOf(
                                 "accuracy" to "70.0"
                             )
@@ -106,7 +106,7 @@ class RaceResultViewFacade(
                             )
                         ),
                         GeoView(
-                            geometry = GeoGeometryView(coordinates = listOf(15.7276, 51.9705)),
+                            geometry = GeometryView(coordinates = listOf(15.7276, 51.9705)),
                             properties = mapOf(
                                 "accuracy" to "50.0"
                             )
@@ -128,7 +128,7 @@ class RaceResultViewFacade(
                             )
                         ),
                         GeoView(
-                            geometry = GeoGeometryView(coordinates = listOf(15.7256, 51.9664)),
+                            geometry = GeometryView(coordinates = listOf(15.7256, 51.9664)),
                             properties = mapOf(
                                 "accuracy" to "70.0"
                             )
@@ -158,7 +158,7 @@ class RaceResultViewFacade(
                             )
                         ),
                         GeoView(
-                            geometry = GeoGeometryView(coordinates = listOf(15.6257, 51.9549)),
+                            geometry = GeometryView(coordinates = listOf(15.6257, 51.9549)),
                             properties = mapOf(
                                 "accuracy" to "70.0"
                             )
@@ -180,7 +180,7 @@ class RaceResultViewFacade(
                             )
                         ),
                         GeoView(
-                            geometry = GeoGeometryView(coordinates = listOf(15.7279, 51.9707)),
+                            geometry = GeometryView(coordinates = listOf(15.7279, 51.9707)),
                             properties = mapOf(
                                 "accuracy" to "50.0"
                             )

@@ -27,15 +27,12 @@ class BackofficeCategoryController(
         val name: String,
         val routeId: String,
 //        dodo mock
-        val maxTime: Long = 4,
-//        dodo mock
         val competitionId: String = "Competition123",
-        val backgroundMapId: String,
     )
 
     private fun CreateCategoryRequest.toCommand() =
 //        dodo mock backgroundMapName
-        CreateCategoryCommand(name = name, competitionId = competitionId, routeId = routeId, maxTime = maxTime, backgroundMapId = backgroundMapId)
+        CreateCategoryCommand(name = name, competitionId = competitionId, routeId = routeId)
 
     @PostMapping("/delete")
     @ResponseStatus(HttpStatus.OK)

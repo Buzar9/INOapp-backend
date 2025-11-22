@@ -1,6 +1,6 @@
 package com.mbuzarewicz.inoapp.view.model
 
-data class GeoGeometryView(
+data class GeometryView(
     val type: String = "Point",
     val coordinates: List<Double>
 )

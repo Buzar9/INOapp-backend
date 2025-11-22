@@ -6,6 +6,8 @@ import com.mbuzarewicz.inoapp.RouteFacade
 import com.mbuzarewicz.inoapp.command.*
 import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.query.GetAllRoutesQuery
+import com.mbuzarewicz.inoapp.query.GetConsolidatedRouteViewQuery
+import com.mbuzarewicz.inoapp.view.model.ConsolidatedRouteView
 import com.mbuzarewicz.inoapp.view.model.RouteOptionView
 import com.mbuzarewicz.inoapp.view.model.RouteView
 import org.springframework.http.HttpStatus
@@ -176,4 +178,19 @@ class BackofficeRouteController(
     )
 
     private fun GetAllRoutesRequest.toQuery() = GetAllRoutesQuery(competitionId)
+
+    @PostMapping(value = ["/consolidated_routes"])
+    fun getConsolidatedRouteView(
+        @RequestBody request: GetConsolidatedRouteViewRequest
+    ): ResponseEntity<ConsolidatedRouteView> {
+        val consolidatedRouteView = routeFacade.getConsolidatedStationView(request.toQuery())
+        return ResponseEntity.status(200).body(consolidatedRouteView)
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class GetConsolidatedRouteViewRequest(
+        val competitionId: String,
+    )
+
+    private fun GetConsolidatedRouteViewRequest.toQuery() = GetConsolidatedRouteViewQuery(competitionId)
 }
