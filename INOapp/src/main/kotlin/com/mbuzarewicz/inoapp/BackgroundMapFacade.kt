@@ -4,7 +4,7 @@ import com.mbuzarewicz.inoapp.command.AddBackgroundMapCommand
 import com.mbuzarewicz.inoapp.command.DeleteBackgroundMapCommand
 import com.mbuzarewicz.inoapp.domain.model.BackgroundMap
 import com.mbuzarewicz.inoapp.domain.model.Location
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultBackgroundMapRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultBackgroundMapRepository
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapOptionsQuery
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapQuery
 import com.mbuzarewicz.inoapp.view.mapper.ViewBackgroundMapMapper

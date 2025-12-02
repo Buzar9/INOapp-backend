@@ -3,7 +3,7 @@ package com.mbuzarewicz.inoapp
 import com.mbuzarewicz.inoapp.RunStatus.Companion.isAfterActivation
 import com.mbuzarewicz.inoapp.domain.model.StationType.CHECKPOINT
 import com.mbuzarewicz.inoapp.event.*
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultRunReadModelRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunReadModelRepository
 import com.mbuzarewicz.inoapp.view.model.RunMetricAfterControlPoint
 import org.springframework.stereotype.Component
 

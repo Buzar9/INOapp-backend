@@ -3,7 +3,7 @@ package com.mbuzarewicz.inoapp
 import com.mbuzarewicz.inoapp.command.AddStationCommand
 import com.mbuzarewicz.inoapp.domain.model.Station
 import com.mbuzarewicz.inoapp.domain.model.StationType
-import com.mbuzarewicz.inoapp.peristance.model.DefaultStationRepository
+import com.mbuzarewicz.inoapp.persistence.model.DefaultStationRepository
 import com.mbuzarewicz.inoapp.view.mapper.ViewGeoMapper
 import com.mbuzarewicz.inoapp.view.model.GeoView
 import org.springframework.stereotype.Component

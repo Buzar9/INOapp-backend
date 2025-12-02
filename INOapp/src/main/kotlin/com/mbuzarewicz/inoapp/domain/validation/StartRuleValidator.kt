@@ -1,6 +1,6 @@
 package com.mbuzarewicz.inoapp.domain.validation
 
-import com.mbuzarewicz.inoapp.GeoPositionCalculator
+import com.mbuzarewicz.inoapp.domain.service.GeoPositionCalculator
 import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
 import com.mbuzarewicz.inoapp.domain.model.RuleValidation

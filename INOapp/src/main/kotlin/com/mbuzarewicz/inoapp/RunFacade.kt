@@ -3,8 +3,8 @@ package com.mbuzarewicz.inoapp
 import com.mbuzarewicz.inoapp.command.AddControlPointCommand
 import com.mbuzarewicz.inoapp.command.InitiateRunCommand
 import com.mbuzarewicz.inoapp.domain.model.Run
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultRouteRepository
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultRunRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultRouteRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunRepository
 import com.mbuzarewicz.inoapp.view.model.InitiateRunResponse
 import com.mbuzarewicz.inoapp.view.model.RunMetricAfterControlPoint
 import org.springframework.stereotype.Service

@@ -4,7 +4,7 @@ import com.mbuzarewicz.inoapp.command.AddCompetitionUnitCommand
 import com.mbuzarewicz.inoapp.command.DeleteCompetitionUnitCommand
 import com.mbuzarewicz.inoapp.command.EditCompetitionUnitCommand
 import com.mbuzarewicz.inoapp.domain.model.CompetitionUnit
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultCompetitionUnitRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultCompetitionUnitRepository
 import com.mbuzarewicz.inoapp.query.GetAllCompetitionUnitQuery
 import com.mbuzarewicz.inoapp.view.CompetitionUnitView
 import com.mbuzarewicz.inoapp.view.mapper.CompetitionUnitViewMapper

@@ -4,7 +4,7 @@ import com.mbuzarewicz.inoapp.command.*
 import com.mbuzarewicz.inoapp.domain.model.Route
 import com.mbuzarewicz.inoapp.domain.model.Station
 import com.mbuzarewicz.inoapp.domain.model.StationType
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultRouteRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultRouteRepository
 import com.mbuzarewicz.inoapp.query.GetConsolidatedRouteViewQuery
 import com.mbuzarewicz.inoapp.query.GetAllRoutesQuery
 import com.mbuzarewicz.inoapp.query.GetRouteQuery

@@ -105,6 +105,13 @@ class Run private constructor(
         }
     }
 
+//    dodo nie wiem czy nie kupa? czy mozna odpytywac agregatu o jego stan ?
+    fun getMainTime(): Long {
+        if (startTime == null || finishTime == null) throw Exception("dodo")
+
+        return finishTime!! - startTime!!
+    }
+
     private fun start(stationId: String, location: Location, timestamp: Long): RunStartedEvent? {
         if (status != INITIATED) return null
 
@@ -197,13 +204,7 @@ class Run private constructor(
             controlPoints = controlPoints,
             status = status,
             finishTime = timestamp,
-            mainTime = calculateMainTime(),
+            mainTime = getMainTime(),
         )
-    }
-
-    private fun calculateMainTime(): Long {
-        if (startTime == null || finishTime == null) throw Exception("dodo")
-
-        return finishTime!! - startTime!!
     }
 }

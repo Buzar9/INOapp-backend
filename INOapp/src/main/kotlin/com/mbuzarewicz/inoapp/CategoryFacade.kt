@@ -3,7 +3,7 @@ package com.mbuzarewicz.inoapp
 import com.mbuzarewicz.inoapp.command.CreateCategoryCommand
 import com.mbuzarewicz.inoapp.command.DeleteCategoryCommand
 import com.mbuzarewicz.inoapp.domain.model.Category
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultCategoryRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultCategoryRepository
 import com.mbuzarewicz.inoapp.query.GetStationsByCategoryIdQuery
 import com.mbuzarewicz.inoapp.view.mapper.ViewCategoryMapper
 import com.mbuzarewicz.inoapp.view.mapper.ViewGeoMapper

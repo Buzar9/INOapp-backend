@@ -2,7 +2,7 @@ package com.mbuzarewicz.inoapp
 
 import com.mbuzarewicz.inoapp.command.CreateCompetitionCommand
 import com.mbuzarewicz.inoapp.domain.model.Competition
-import com.mbuzarewicz.inoapp.peristance.repository.DefaultCompetitionRepository
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultCompetitionRepository
 import org.springframework.stereotype.Component
 import java.util.*
 
