@@ -1,6 +1,6 @@
 package com.mbuzarewicz.inoapp.domain.validation
 
-import com.mbuzarewicz.inoapp.domain.service.GeoPositionCalculator
+import com.mbuzarewicz.inoapp.domain.service.DistanceCalculator
 import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.domain.model.RuleType
 import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
@@ -9,7 +9,7 @@ import com.mbuzarewicz.inoapp.domain.model.RuleValidationResult.*
 
 class FinishRuleValidator {
 
-    private val geoPositionCalculator = GeoPositionCalculator()
+    private val distanceCalculator = DistanceCalculator()
     private val maxRunningTime = 14400000
 
     fun validate(
@@ -39,13 +39,11 @@ class FinishRuleValidator {
             return this
         }
 
-        val distance = geoPositionCalculator.calculateDistance(
-            controlPointLocation.lat,
-            controlPointLocation.lng,
-            stationLocation.lat,
-            stationLocation.lng
+        val distance = distanceCalculator.calculateDistance(
+            controlPointLocation,
+            stationLocation,
         )
-        val tolerance = geoPositionCalculator.calculateTolerance(
+        val tolerance = distanceCalculator.calculateTolerance(
             controlPointLocation.accuracy,
             stationLocation.accuracy
         )

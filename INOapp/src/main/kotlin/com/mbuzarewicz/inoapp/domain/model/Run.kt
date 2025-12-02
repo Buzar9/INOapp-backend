@@ -4,6 +4,8 @@ import com.mbuzarewicz.inoapp.RunStatus
 import com.mbuzarewicz.inoapp.RunStatus.*
 import com.mbuzarewicz.inoapp.command.AddControlPointCommand
 import com.mbuzarewicz.inoapp.domain.model.StationType.*
+import com.mbuzarewicz.inoapp.domain.model.vo.Duration
+import com.mbuzarewicz.inoapp.domain.model.vo.DurationUnit
 import com.mbuzarewicz.inoapp.domain.validation.ControlPointRuleValidator
 import com.mbuzarewicz.inoapp.domain.validation.FinishRuleValidator
 import com.mbuzarewicz.inoapp.domain.validation.StartRuleValidator
@@ -106,10 +108,10 @@ class Run private constructor(
     }
 
 //    dodo nie wiem czy nie kupa? czy mozna odpytywac agregatu o jego stan ?
-    fun getMainTime(): Long {
+    fun getMainTime(): Duration {
         if (startTime == null || finishTime == null) throw Exception("dodo")
 
-        return finishTime!! - startTime!!
+        return Duration(finishTime!! - startTime!!, DurationUnit.MILLISECONDS)
     }
 
     private fun start(stationId: String, location: Location, timestamp: Long): RunStartedEvent? {
@@ -204,7 +206,8 @@ class Run private constructor(
             controlPoints = controlPoints,
             status = status,
             finishTime = timestamp,
-            mainTime = getMainTime(),
+//            dodo zmienic na Duration
+            mainTime = getMainTime().value,
         )
     }
 }

@@ -1,16 +1,16 @@
 package com.mbuzarewicz.inoapp.domain.validation
 
-import com.mbuzarewicz.inoapp.domain.service.GeoPositionCalculator
 import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.domain.model.RuleType.INTERVAL_IS_LONG_ENOUGH
 import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
 import com.mbuzarewicz.inoapp.domain.model.RuleValidation
 import com.mbuzarewicz.inoapp.domain.model.RuleValidationResult.*
+import com.mbuzarewicz.inoapp.domain.service.DistanceCalculator
 
 class ControlPointRuleValidator {
 
     private val minimumTimeBetweenCheckpoints: Long = 300
-    private val geoPositionCalculator = GeoPositionCalculator()
+    private val distanceCalculator = DistanceCalculator()
 
     fun validate(
         lastControlPointTimestamp: Long?,
@@ -57,13 +57,11 @@ class ControlPointRuleValidator {
             return this
         }
 
-        val distance = geoPositionCalculator.calculateDistance(
-            controlPointLocation.lat,
-            controlPointLocation.lng,
-            stationLocation.lat,
-            stationLocation.lng
+        val distance = distanceCalculator.calculateDistance(
+            controlPointLocation,
+            stationLocation,
         )
-        val tolerance = geoPositionCalculator.calculateTolerance(
+        val tolerance = distanceCalculator.calculateTolerance(
             controlPointLocation.accuracy,
             stationLocation.accuracy
         )

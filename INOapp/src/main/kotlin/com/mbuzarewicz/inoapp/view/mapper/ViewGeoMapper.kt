@@ -2,6 +2,7 @@ package com.mbuzarewicz.inoapp.view.mapper
 
 import com.mbuzarewicz.inoapp.TranslateService
 import com.mbuzarewicz.inoapp.domain.model.ControlPoint
+import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.domain.model.Station
 import com.mbuzarewicz.inoapp.view.model.GeometryView
 import com.mbuzarewicz.inoapp.view.model.GeoView
@@ -41,5 +42,11 @@ class ViewGeoMapper {
                 )
             )
         }
+    }
+// dodo te typu to tu zaorac bo idzie sie zajechac
+    fun mapToView(location: Location): GeometryView {
+        return GeometryView(
+            coordinates = listOf(location.lng, location.lat)
+        )
     }
 }
