@@ -4,6 +4,7 @@ import com.mbuzarewicz.inoapp.RunStatus.Companion.isAfterActivation
 import com.mbuzarewicz.inoapp.domain.model.StationType.CHECKPOINT
 import com.mbuzarewicz.inoapp.event.*
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunReadModelRepository
+import com.mbuzarewicz.inoapp.view.mapper.ViewControlPointViewMapper
 import com.mbuzarewicz.inoapp.view.model.RunMetricAfterControlPoint
 import org.springframework.stereotype.Component
 
@@ -12,7 +13,7 @@ class RunReadModelFacade(
     private val repository: DefaultRunReadModelRepository,
     private val categoryFacade: CategoryFacade,
 ) {
-    private val mapper = ScanTrustValidationResultRunReadModelMapper()
+    private val viewControlPointMapper = ViewControlPointViewMapper()
 
     fun getByRunId(runId: String): RunReadModel? {
         return repository.getByRunId(runId)
@@ -63,10 +64,17 @@ class RunReadModelFacade(
 
         updatedRunReadModel?.let { repository.save(it) }
 
+        val controlPoints = updatedRunReadModel?.controlPoints
+            ?.map { controlPoint -> viewControlPointMapper.mapToView(controlPoint) }
+            ?: emptyList()
+
+//        dodo 240840f9-d5ea-4476-8b15-7177f7913f5e
+
         return RunMetricAfterControlPoint(
             startTime = updatedRunReadModel?.startTime,
             finishTime = updatedRunReadModel?.finishTime,
             mainTime = updatedRunReadModel?.mainTime,
+            controlPoints = controlPoints,
             checkpointsNumber = updatedRunReadModel?.getCheckpointsNumber() ?: 0,
             wasActivate = updatedRunReadModel?.status?.isAfterActivation() ?: false,
             isFinished = updatedRunReadModel?.status == RunStatus.FINISHED,
