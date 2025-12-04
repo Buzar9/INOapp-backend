@@ -1,6 +1,7 @@
 package com.mbuzarewicz.inoapp
 
 import com.mbuzarewicz.inoapp.command.AppendRunTrackPointsCommand
+import com.mbuzarewicz.inoapp.domain.service.GpsNoiseFilterService
 import com.mbuzarewicz.inoapp.domain.service.RunTrackSegmentService
 import com.mbuzarewicz.inoapp.domain.service.RunTrackStatsCalculator
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunRepository
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component
 class RunTrackFacade(
     private val runTrackRepository: DefaultRunTrackRepository,
     private val runRepository: DefaultRunRepository,
+    private val gpsNoiseFilterService: GpsNoiseFilterService,
 ) {
     private val statsCalculator = RunTrackStatsCalculator()
     private val segmentService = RunTrackSegmentService()
@@ -34,7 +36,9 @@ class RunTrackFacade(
         val runTrack = runTrackRepository.findByRunId(runId) ?: return null
         val duration = run.getMainTime()
 
-        val segments = segmentService.createSegments(runTrack.points)
+        val filteredPoints = gpsNoiseFilterService.filterPoints(runTrack.points)
+
+        val segments = segmentService.createSegments(filteredPoints)
         val stats = statsCalculator.calculateStats(segments, duration)
 
         val segmentsView = segments.map { viewSegmentMapper.mapToView(it) }
