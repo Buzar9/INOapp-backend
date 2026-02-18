@@ -19,17 +19,15 @@ class RaceResultViewFacade(
     private val viewBackgroundMapMapper = ViewBackgroundMapMapper()
 
     fun getResults(query: GetFilteredCompetitionResultsQuery): List<RaceResultView> {
-        val runReadModels = runReadModelFacade.getAll()
-
         val categories = query.filter?.get("category") ?: emptyList()
         val competitionUnits = query.filter?.get("team") ?: emptyList()
         val statues = query.filter?.get("status") ?: emptyList()
 
-        val dodo = runReadModelFacade.getFiltered(categories = categories, competitionUnits = competitionUnits, statues = statues)
+        val runReadModels = runReadModelFacade.getFiltered(categories = categories, competitionUnits = competitionUnits, statues = statues)
 
 //        dodo mapper do view ? jak jest gdzie indziej ?
 //        dodo zaoszczędzić strzałów, może zrobić categoryReadModel, który ma w sobie backgroundMap i route?
-        val results = dodo.map {
+        val results = runReadModels.map {
             val category = categoryFacade.getById(it.categoryId) ?: throw Exception()
             val startTimeToDisplay = formatToDailyHour(it.startTime)
             val finishTimeToDisplay = formatToDailyHour(it.finishTime)
@@ -37,6 +35,7 @@ class RaceResultViewFacade(
 
 //            dodo jak zrobic edytowalną polityke wyswietlania wynikow, od gory zwycięscy?
             RaceResultView(
+                runId = it.id,
                 participantNickname = it.participantName,
                 participantUnit = it.participantUnit,
                 categoryName = category.name,
@@ -63,6 +62,7 @@ class RaceResultViewFacade(
     private fun defaultRaceResultViews(): List<RaceResultView> {
         val resultsDodo = listOf(
             RaceResultView(
+                "runId1",
                 "Dodo participiant",
                 "Dodo unit",
                 "T-Extreme",
@@ -137,6 +137,7 @@ class RaceResultViewFacade(
                 )
             ),
             RaceResultView(
+                "runId2",
                 "Dodo participiant 2",
                 "Dodo unit",
                 "Topór-Extreme",

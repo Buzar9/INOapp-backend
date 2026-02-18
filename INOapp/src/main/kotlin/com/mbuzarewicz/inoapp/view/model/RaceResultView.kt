@@ -1,6 +1,7 @@
 package com.mbuzarewicz.inoapp.view.model
 
 data class RaceResultView(
+    val runId: String,
     val participantNickname: String,
     val participantUnit: String,
     val categoryName: String,

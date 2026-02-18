@@ -64,7 +64,6 @@ class MapMetadataService() {
     }
 
     private fun String.mapToTemplateMapMetadata(): TemplateMapMetadata {
-//        dodo póki co działa tylko z epsg 2180
         val rootNode = mapper.readTree(this)
         val epsg = rootNode.path("stac").path("proj:epsg").toString()
         val upperRight = rootNode.path("cornerCoordinates").path("upperRight").let { listOf(it.get(0).asDouble(), it.get(1).asDouble()) }
