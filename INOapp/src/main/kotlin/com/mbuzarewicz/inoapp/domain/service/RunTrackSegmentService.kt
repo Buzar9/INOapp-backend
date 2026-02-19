@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class RunTrackSegmentService(
-    private val distanceCalculator: DistanceCalculator = DistanceCalculator(),
+    private val positionCalculator: PositionCalculator = PositionCalculator(),
     private val durationCalculator: DurationCalculator = DurationCalculator(),
     private val velocityCalculator: VelocityCalculator = VelocityCalculator()
 ) {
@@ -26,7 +26,7 @@ class RunTrackSegmentService(
                 targetUnit = SECONDS
             )
 
-            val distance = distanceCalculator.calculateDistance(
+            val distance = positionCalculator.calculateDistance(
                 firstLocation = startPoint.location,
                 secondLocation = endPoint.location,
                 targetUnit = DistanceUnit.KILOMETERS

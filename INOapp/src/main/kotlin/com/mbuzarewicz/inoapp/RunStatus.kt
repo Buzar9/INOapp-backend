@@ -1,7 +1,10 @@
 package com.mbuzarewicz.inoapp
 
 enum class RunStatus {
-    INITIATED, STARTED, FINISHED;
+    CANCELED,
+    FINISHED,
+    INITIATED,
+    STARTED;
 
     companion object {
         fun RunStatus.isAfterActivation() = this == STARTED || this == FINISHED

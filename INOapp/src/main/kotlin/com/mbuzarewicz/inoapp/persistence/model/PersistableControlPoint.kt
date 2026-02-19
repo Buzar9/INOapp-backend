@@ -7,4 +7,5 @@ data class PersistableControlPoint(
     val location: PersistableLocation = PersistableLocation(),
     val timestamp: Long = 0,
     val ruleValidations: List<PersistableRuleValidation> = listOf(),
+    val reporter: String = "",
 )

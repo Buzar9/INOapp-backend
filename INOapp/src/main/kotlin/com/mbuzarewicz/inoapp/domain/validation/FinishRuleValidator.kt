@@ -1,6 +1,6 @@
 package com.mbuzarewicz.inoapp.domain.validation
 
-import com.mbuzarewicz.inoapp.domain.service.DistanceCalculator
+import com.mbuzarewicz.inoapp.domain.service.PositionCalculator
 import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.domain.model.RuleType
 import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
@@ -9,11 +9,11 @@ import com.mbuzarewicz.inoapp.domain.model.RuleValidationResult.*
 
 class FinishRuleValidator {
 
-    private val distanceCalculator = DistanceCalculator()
+    private val positionCalculator = PositionCalculator()
     private val maxRunningTime = 14400000
 
     fun validate(
-        controlPointLocation: Location,
+        controlPointLocation: Location?,
         stationLocation: Location,
         startTime: Long,
         finishTime: Long
@@ -25,11 +25,11 @@ class FinishRuleValidator {
     }
 
     private fun MutableList<RuleValidation>.checkIfIsWithinToleranceRange(
-        controlPointLocation: Location,
+        controlPointLocation: Location?,
         stationLocation: Location,
     ): MutableList<RuleValidation> {
         val type = IS_WITHIN_TOLERANCE_RANGE
-        if (controlPointLocation.lat <= 0.0 || controlPointLocation.lng <= 0.0) {
+        if (controlPointLocation == null || controlPointLocation.lat <= 0.0 || controlPointLocation.lng <= 0.0) {
             this.add(
                 RuleValidation(
                     type = type,
@@ -39,11 +39,11 @@ class FinishRuleValidator {
             return this
         }
 
-        val distance = distanceCalculator.calculateDistance(
+        val distance = positionCalculator.calculateDistance(
             controlPointLocation,
             stationLocation,
         )
-        val tolerance = distanceCalculator.calculateTolerance(
+        val tolerance = positionCalculator.calculateTolerance(
             controlPointLocation.accuracy,
             stationLocation.accuracy
         )

@@ -17,7 +17,7 @@ class ParticipantCategoryController(
 
     @PostMapping("/stations")
     fun getStations(@RequestBody request: GetStationsForCategoryRequest): ResponseEntity<List<GeoView>> {
-        val result = categoryFacade.getStationsByCategoryId(request.toQuery())
+        val result = categoryFacade.getStationsGeoViewByCategoryId(request.toQuery())
         return ResponseEntity.status(200).body(result)
     }
 

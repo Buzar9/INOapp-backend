@@ -5,7 +5,6 @@ import com.mbuzarewicz.inoapp.domain.model.Run
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRun
 
 class PersistableRunMapper {
-    private val constantStationMapper = PersistableStationMapper()
     private val checkpointMapper = PersistableControlPointMapper()
 
     fun mapToPersistableEntity(domain: Run): PersistableRun {
@@ -14,7 +13,8 @@ class PersistableRunMapper {
                 id = id,
                 categoryId = categoryId,
                 competitionId = competitionId,
-                stations = stations.map { constantStationMapper.mapToPersistableEntity(it) },
+//                !dodo sprawdzic czy mozna usunac
+                stations = mutableListOf(),
                 controlPoints = controlPoints.map { checkpointMapper.mapToPersistableEntity(it) },
                 startTime = startTime,
                 finishTime = finishTime,
@@ -29,7 +29,6 @@ class PersistableRunMapper {
                 id = id,
                 categoryId = categoryId,
                 competitionId = competitionId,
-                stations = stations.map { constantStationMapper.mapToDomainEntity(it) },
                 controlPoints = controlPoints.map { checkpointMapper.mapToDomainEntity(it) }.toMutableList(),
                 startTime = startTime,
                 finishTime = finishTime,

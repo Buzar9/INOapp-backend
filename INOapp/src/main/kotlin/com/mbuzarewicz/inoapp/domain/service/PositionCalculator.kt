@@ -5,8 +5,13 @@ import com.mbuzarewicz.inoapp.domain.model.vo.Distance
 import com.mbuzarewicz.inoapp.domain.model.vo.DistanceUnit
 import com.mbuzarewicz.inoapp.domain.model.vo.DistanceUnit.METERS
 import kotlin.math.*
+import kotlin.random.Random
 
-class DistanceCalculator {
+class PositionCalculator {
+
+    companion object {
+        private const val EARTH_RADIUS_METERS = 6_371_000.0
+    }
 
     fun calculateDistance(
         firstLocation: Location,
@@ -34,7 +39,6 @@ class DistanceCalculator {
         secondLat: Double,
         secondLng: Double
     ): Double {
-        val earthRadius = 6371000.0
         val firstRadianLat = Math.toRadians(firstLat)
         val firstRadianLng = Math.toRadians(firstLng)
 
@@ -50,8 +54,21 @@ class DistanceCalculator {
             )
         val centralAngle = 2 * atan2(sqrt(haversine), sqrt(1 - haversine))
 
-        return earthRadius * centralAngle
+        return EARTH_RADIUS_METERS * centralAngle
     }
 
     fun calculateTolerance(firstAccuracy: Double, secondAccuracy: Double) = Distance(firstAccuracy + secondAccuracy, METERS)
+
+    fun randomLocationOnCircle(location: Location, radiusMeters: Double): Location {
+        val randomAngle = Random.nextDouble(0.0, 2 * Math.PI)
+
+        val deltaLat = (radiusMeters / EARTH_RADIUS_METERS) * cos(randomAngle)
+        val deltaLng = (radiusMeters / (EARTH_RADIUS_METERS * cos(Math.toRadians(location.lat)))) * sin(randomAngle)
+
+        return Location(
+            lat = location.lat + Math.toDegrees(deltaLat),
+            lng = location.lng + Math.toDegrees(deltaLng),
+            accuracy = location.accuracy
+        )
+    }
 }

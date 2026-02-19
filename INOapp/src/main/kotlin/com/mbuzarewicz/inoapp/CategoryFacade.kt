@@ -3,6 +3,7 @@ package com.mbuzarewicz.inoapp
 import com.mbuzarewicz.inoapp.command.CreateCategoryCommand
 import com.mbuzarewicz.inoapp.command.DeleteCategoryCommand
 import com.mbuzarewicz.inoapp.domain.model.Category
+import com.mbuzarewicz.inoapp.domain.model.Station
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultCategoryRepository
 import com.mbuzarewicz.inoapp.query.GetStationsByCategoryIdQuery
 import com.mbuzarewicz.inoapp.view.mapper.ViewCategoryMapper
@@ -37,12 +38,15 @@ class CategoryFacade(
         categoryRepository.save(category)
     }
 
-    fun getStationsByCategoryId(query: GetStationsByCategoryIdQuery): List<GeoView> {
-        val category = categoryRepository.getById(query.categoryId) ?: throw Exception()
+    fun getStationsGeoViewByCategoryId(query: GetStationsByCategoryIdQuery): List<GeoView> {
+        val stations = getStationsByCategoryId(query.categoryId)
+        return stations.map { geoViewMapper.mapToView(it) }
+    }
 
+    fun getStationsByCategoryId(categoryId: String): List<Station> {
+        val category = categoryRepository.getById(categoryId) ?: throw Exception()
         val route = routeFacade.getRoute(category.routeId) ?: throw Exception()
-
-        return route.stations.map { geoViewMapper.mapToView(it) }
+        return route.stations
     }
 
     fun getAll(): List<CategoryView> {

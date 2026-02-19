@@ -16,7 +16,8 @@ class PersistableControlPointMapper {
                 type.toString(),
                 locationMapper.mapToPersistableEntity(location),
                 timestamp,
-                ruleValidation.map { ruleValidationtMapper.mapToPersistableEntity(it) }
+                ruleValidation.map { ruleValidationtMapper.mapToPersistableEntity(it) },
+                reporter = reporter
             )
         }
     }
@@ -29,7 +30,8 @@ class PersistableControlPointMapper {
                 StationType.valueOf(type),
                 locationMapper.mapToDomainEntity(location),
                 timestamp,
-                ruleValidations.map { ruleValidationtMapper.mapToDomainEntity(it) }
+                ruleValidations.map { ruleValidationtMapper.mapToDomainEntity(it) },
+                reporter = reporter
             )
         }
     }

@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin(origins = ["http://localhost:4200"])
 class BackofficeRouteController(
     private val routeFacade: RouteFacade,
-//    dodo osobny kontroler
-    private val raceResultViewFacade: RaceResultViewFacade
 ) {
 
     @PostMapping(value = ["/create"])

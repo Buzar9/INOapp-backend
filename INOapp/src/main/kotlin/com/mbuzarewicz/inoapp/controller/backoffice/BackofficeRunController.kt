@@ -1,47 +1,21 @@
-package com.mbuzarewicz.inoapp.controler.participant
+package com.mbuzarewicz.inoapp.controller.backoffice
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.mbuzarewicz.inoapp.RegisterViewFacade
 import com.mbuzarewicz.inoapp.RunFacade
 import com.mbuzarewicz.inoapp.command.AddControlPointCommand
 import com.mbuzarewicz.inoapp.command.CancelRunCommand
-import com.mbuzarewicz.inoapp.command.InitiateRunCommand
-import com.mbuzarewicz.inoapp.domain.model.Location
-import com.mbuzarewicz.inoapp.view.model.InitiateRunResponse
 import com.mbuzarewicz.inoapp.view.model.RunMetricAfterControlPoint
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-@RequestMapping(path = ["/runs"], produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(path = ["/backoffice/runs"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @RestController
 @CrossOrigin(origins = ["http://localhost:4200"])
-class ParticipantRunController(
-    private val registerViewFacade: RegisterViewFacade,
+class BackofficeRunController(
     private val runFacade: RunFacade,
 ) {
-
-    @PostMapping(value = ["/initiate"])
-    @ResponseStatus(HttpStatus.OK)
-    fun initiateRun(
-        @RequestBody initiateRunRequest: InitiateRunRequest
-    ): ResponseEntity<InitiateRunResponse> {
-        val initiateRunResponse = runFacade.initiateRun(initiateRunRequest.toCommand())
-        return ResponseEntity.status(200).body(initiateRunResponse)
-//        dodo obsluga bledow i zwrot odpowieniego http status
-    }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class InitiateRunRequest(
-        val competitionId: String,
-        val categoryId: String,
-        val participantName: String,
-        val participantUnitName: String,
-    )
-
-    private fun InitiateRunRequest.toCommand() =
-        InitiateRunCommand(categoryId, participantName, participantUnitName, competitionId)
 
     @PostMapping(value = ["/add_control_point"])
     @ResponseStatus(HttpStatus.OK)
@@ -58,12 +32,12 @@ class ParticipantRunController(
     data class AddControlPointRequest(
         val runId: String,
         val stationId: String,
-        val location: Location,
-        val timestamp: String
+        val reporter: String,
+        val timestamp: String? = null,
     )
 
     private fun AddControlPointRequest.toCommand() =
-        AddControlPointCommand(runId, stationId, location, timestamp.toLong(), "USER", mutableListOf())
+        AddControlPointCommand(runId, stationId, null, timestamp?.toLong(), reporter, mutableListOf())
 
     @PostMapping(value = ["/cancel"])
     @ResponseStatus(HttpStatus.OK)
@@ -74,8 +48,9 @@ class ParticipantRunController(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class CancelRunRequest(
-        val runId: String
+        val runId: String,
+        val reporter: String
     )
 
-    private fun CancelRunRequest.toCommand() = CancelRunCommand(runId, "USER")
+    private fun CancelRunRequest.toCommand() = CancelRunCommand(runId, reporter)
 }

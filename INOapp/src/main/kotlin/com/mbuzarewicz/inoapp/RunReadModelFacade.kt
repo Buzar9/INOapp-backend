@@ -96,5 +96,15 @@ class RunReadModelFacade(
         return repository.getFiltered(competitionUnits, categoriesId, statues)
     }
 
+    fun updateOnCanceledRunEvent(event: RunCanceledEvent) {
+        val runReadModel = repository.getByRunId(event.runId)
+
+        val updatedRunReadModel = runReadModel?.copy(
+            status = event.status
+        )
+
+        updatedRunReadModel?.let { repository.save(it) }
+    }
+
     private fun RunReadModel.getCheckpointsNumber() = controlPoints.filter { it.type == CHECKPOINT }.size
 }

@@ -6,5 +6,6 @@ data class ControlPoint(
     val type: StationType,
     val location: Location,
     val timestamp: Long,
-    val ruleValidation: List<RuleValidation>
+    val ruleValidation: List<RuleValidation>,
+    val reporter: String
 )

@@ -3,9 +3,13 @@ package com.mbuzarewicz.inoapp.domain.model
 import com.mbuzarewicz.inoapp.RunStatus
 import com.mbuzarewicz.inoapp.RunStatus.*
 import com.mbuzarewicz.inoapp.command.AddControlPointCommand
+import com.mbuzarewicz.inoapp.command.CancelRunCommand
+import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
+import com.mbuzarewicz.inoapp.domain.model.RuleValidationResult.INSUFFICIENT_DATA
 import com.mbuzarewicz.inoapp.domain.model.StationType.*
 import com.mbuzarewicz.inoapp.domain.model.vo.Duration
 import com.mbuzarewicz.inoapp.domain.model.vo.DurationUnit
+import com.mbuzarewicz.inoapp.domain.service.PositionCalculator
 import com.mbuzarewicz.inoapp.domain.validation.ControlPointRuleValidator
 import com.mbuzarewicz.inoapp.domain.validation.FinishRuleValidator
 import com.mbuzarewicz.inoapp.domain.validation.StartRuleValidator
@@ -17,7 +21,6 @@ class Run private constructor(
     val id: String,
 //    dodo run jako agregat wie jaka jest kategoria i competition i jak chcesz odpalac cala kategorie na raz to szukasz wszystkich agregatow w kategorii i na kazdym wykonujesz metoda ktora wbija status start enabled
     val competitionId: String,
-    val stations: MutableList<Station>,
     val controlPoints: MutableList<ControlPoint>,
 //    dodo niby samotna wyspa ale kategorie to musi znac
     var categoryId: String,
@@ -31,6 +34,7 @@ class Run private constructor(
     private val startRuleValidator = StartRuleValidator()
     private val controlPointRuleValidator = ControlPointRuleValidator()
     private val finishRuleValidator = FinishRuleValidator()
+    private val positionCalculator = PositionCalculator()
 
     companion object {
         fun initiate(
@@ -38,7 +42,6 @@ class Run private constructor(
             participantUnit: String,
             categoryId: String,
             competitionId: String,
-            stations: List<Station>
         ): Pair<Run, RunInitiatedEvent> {
             val runId = UUID.randomUUID().toString()
             return Pair(
@@ -46,7 +49,6 @@ class Run private constructor(
                     id = runId,
                     categoryId = categoryId,
                     competitionId = competitionId,
-                    stations = stations.toMutableList(),
                     controlPoints = mutableListOf(),
                     status = INITIATED
                 ),
@@ -66,7 +68,6 @@ class Run private constructor(
             id: String,
             categoryId: String,
             competitionId: String,
-            stations: List<Station>,
             controlPoints: MutableList<ControlPoint>,
             startTime: Long?,
             finishTime: Long?,
@@ -76,7 +77,6 @@ class Run private constructor(
                 id = id,
                 categoryId = categoryId,
                 competitionId = competitionId,
-                stations = stations.toMutableList(),
                 controlPoints = controlPoints,
                 status = status
             )
@@ -88,49 +88,63 @@ class Run private constructor(
     }
 
     fun addControlPoint(command: AddControlPointCommand): AddedControlPointEvent? {
-        val station = stations.firstOrNull { it.id == command.stationId }
+        if (command.stations.isEmpty()) return null
 
-        if (station == null) return null
+        val station = command.stations.firstOrNull { it.id == command.stationId }
+
+        station ?: return null
 
         return when (station.type) {
             START_RUN -> {
-                start(command.stationId, command.location, command.timestamp)
+                start(station, command.location, command.timestamp, command.reporter)
             }
 
             CHECKPOINT -> {
-                addCheckpoint(command.stationId, command.location, command.timestamp)
+                addCheckpoint(station, command.location, command.timestamp, command.reporter)
             }
 
             FINISH_RUN -> {
-                finish(command.stationId, command.location, command.timestamp)
+                finish(station, command.location, command.timestamp, command.reporter)
             }
         }
     }
 
-//    dodo nie wiem czy nie kupa? czy mozna odpytywac agregatu o jego stan ?
+    fun cancel(): RunCanceledEvent {
+        status = CANCELED
+
+        return RunCanceledEvent(
+            runId = id,
+            status = status,
+        )
+
+    }
+
+    //    dodo nie wiem czy nie kupa? czy mozna odpytywac agregatu o jego stan ?
     fun getMainTime(): Duration {
         if (startTime == null || finishTime == null) throw Exception("dodo")
 
         return Duration(finishTime!! - startTime!!, DurationUnit.MILLISECONDS)
     }
 
-    private fun start(stationId: String, location: Location, timestamp: Long): RunStartedEvent? {
+    private fun start(station: Station, location: Location?, timestamp: Long?, reporter: String): RunStartedEvent? {
         if (status != INITIATED) return null
+        if (controlPoints.any { it.stationId == station.id }) return null
 
-        val station = stations.firstOrNull { it.id == stationId }
-
-        if (station == null || station.type != START_RUN) return null
+        if (timestamp == null) return null
 
         val ruleValidation = startRuleValidator.validate(location, station.location)
-//        dodo co z tym mapperem i co z trzymaniem wynikow walidacji w agregacie?
+//        dodo co z tym mapperem i co z trzymaniem wynikow walidacji w agregacie? moze na event o wystartowaniu powinnien byc handler ktory to zlapie i zwaliduje? wtedy osobny model na walidacje i polityka zwyciezcow
+
+        val validatedLocation = getValidLocationOrRandom(ruleValidation, station.location)
 
         val controlPoint = ControlPoint(
-            stationId = stationId,
+            stationId = station.id,
             name = station.name,
             type = station.type,
-            location = location,
+            location = validatedLocation,
             timestamp = timestamp,
-            ruleValidation = ruleValidation
+            ruleValidation = ruleValidation,
+            reporter = reporter
         )
         controlPoints.add(controlPoint)
 
@@ -145,29 +159,29 @@ class Run private constructor(
         )
     }
 
-    private fun addCheckpoint(stationId: String, location: Location, timestamp: Long): AddedCheckpointEvent? {
-        if (status != STARTED) return null
-        if (controlPoints.any { it.stationId == stationId }) return null
-
-        val station = stations.firstOrNull { it.id == stationId }
-
-        if (station == null || station.type != CHECKPOINT) return null
+    private fun addCheckpoint(station: Station, location: Location?, timestamp: Long?, reporter: String): AddedCheckpointEvent? {
+//       dodo tu jest kupa zabezpieczen ze ten user jest na srtingu
+        if (status != STARTED && reporter.uppercase() == "USER") return null
+        if (controlPoints.any { it.stationId == station.id }) return null
 
         val lastControlStationTimestamp = controlPoints.maxByOrNull { it.timestamp }?.timestamp
         val ruleValidation = controlPointRuleValidator.validate(
             lastControlStationTimestamp,
-            timestamp,
+            timestamp ?: 0L,
             location,
             station.location
         )
 
+        val validatedLocation = getValidLocationOrRandom(ruleValidation, station.location)
+
         val controlPoint = ControlPoint(
-            stationId = stationId,
+            stationId = station.id,
             name = station.name,
             type = station.type,
-            location = location,
-            timestamp = timestamp,
-            ruleValidation = ruleValidation
+            location = validatedLocation,
+            timestamp = timestamp ?: 0L,
+            ruleValidation = ruleValidation,
+            reporter = reporter
         )
         controlPoints.add(controlPoint)
 
@@ -177,12 +191,10 @@ class Run private constructor(
         )
     }
 
-    private fun finish(stationId: String, location: Location, timestamp: Long): RunFinishedEvent? {
+    private fun finish(station: Station, location: Location?, timestamp: Long?, reporter: String): RunFinishedEvent? {
         if (status != STARTED) return null
 
-        val station = stations.firstOrNull { it.id == stationId }
-
-        if (station == null || station.type != FINISH_RUN) return null
+        if (timestamp == null) return null
 
         val ruleValidation =
             finishRuleValidator.validate(location, station.location, startTime!!, timestamp)
@@ -191,13 +203,16 @@ class Run private constructor(
 
         finishTime = timestamp
 
+        val validatedLocation = getValidLocationOrRandom(ruleValidation, station.location)
+
         val controlPoint = ControlPoint(
-            stationId = stationId,
+            stationId = station.id,
             name = station.name,
             type = station.type,
-            location = location,
+            location = validatedLocation,
             timestamp = timestamp,
-            ruleValidation = ruleValidation
+            ruleValidation = ruleValidation,
+            reporter = reporter
         )
         controlPoints.add(controlPoint)
 
@@ -209,5 +224,14 @@ class Run private constructor(
 //            dodo zmienic na Duration
             mainTime = getMainTime().value,
         )
+    }
+
+    private fun getValidLocationOrRandom(ruleValidation: List<RuleValidation>, location: Location): Location {
+        val isLocationInsufficientData = ruleValidation.firstOrNull { it.type == IS_WITHIN_TOLERANCE_RANGE }?.result == INSUFFICIENT_DATA
+        return if (isLocationInsufficientData) {
+            positionCalculator.randomLocationOnCircle(location, 50.0)
+        } else {
+            location
+        }
     }
 }

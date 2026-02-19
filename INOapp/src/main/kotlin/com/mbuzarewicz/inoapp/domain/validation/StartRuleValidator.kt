@@ -4,14 +4,14 @@ import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
 import com.mbuzarewicz.inoapp.domain.model.RuleValidation
 import com.mbuzarewicz.inoapp.domain.model.RuleValidationResult.*
-import com.mbuzarewicz.inoapp.domain.service.DistanceCalculator
+import com.mbuzarewicz.inoapp.domain.service.PositionCalculator
 
 class StartRuleValidator {
 
-    private val distanceCalculator = DistanceCalculator()
+    private val positionCalculator = PositionCalculator()
 
     fun validate(
-        controlPointLocation: Location,
+        controlPointLocation: Location?,
         stationLocation: Location
     ): List<RuleValidation> {
         val result: MutableList<RuleValidation> = mutableListOf()
@@ -20,10 +20,10 @@ class StartRuleValidator {
     }
 
     private fun MutableList<RuleValidation>.checkIfIsWithinToleranceRange(
-        controlPointLocation: Location,
+        controlPointLocation: Location?,
         stationLocation: Location,
     ): MutableList<RuleValidation> {
-        if (controlPointLocation.lat <= 0.0 || controlPointLocation.lng <= 0.0) {
+        if (controlPointLocation == null || controlPointLocation.lat <= 0.0 || controlPointLocation.lng <= 0.0) {
             this.add(
                 RuleValidation(
                     type = IS_WITHIN_TOLERANCE_RANGE,
@@ -33,11 +33,11 @@ class StartRuleValidator {
             return this
         }
 
-        val distance = distanceCalculator.calculateDistance(
+        val distance = positionCalculator.calculateDistance(
             controlPointLocation,
             stationLocation,
         )
-        val tolerance = distanceCalculator.calculateTolerance(
+        val tolerance = positionCalculator.calculateTolerance(
             controlPointLocation.accuracy,
             stationLocation.accuracy
         )

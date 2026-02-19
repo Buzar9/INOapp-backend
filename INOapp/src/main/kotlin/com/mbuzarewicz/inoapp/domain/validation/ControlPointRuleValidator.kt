@@ -5,17 +5,17 @@ import com.mbuzarewicz.inoapp.domain.model.RuleType.INTERVAL_IS_LONG_ENOUGH
 import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
 import com.mbuzarewicz.inoapp.domain.model.RuleValidation
 import com.mbuzarewicz.inoapp.domain.model.RuleValidationResult.*
-import com.mbuzarewicz.inoapp.domain.service.DistanceCalculator
+import com.mbuzarewicz.inoapp.domain.service.PositionCalculator
 
 class ControlPointRuleValidator {
 
     private val minimumTimeBetweenCheckpoints: Long = 300
-    private val distanceCalculator = DistanceCalculator()
+    private val positionCalculator = PositionCalculator()
 
     fun validate(
         lastControlPointTimestamp: Long?,
         controlPointTimestamp: Long,
-        controlPointLocation: Location,
+        controlPointLocation: Location?,
         stationLocation: Location
     ): List<RuleValidation> {
         val result: MutableList<RuleValidation> = mutableListOf()
@@ -30,7 +30,11 @@ class ControlPointRuleValidator {
     ): MutableList<RuleValidation> {
         val minimumValidTime = lastControlPointTimestamp?.plus(minimumTimeBetweenCheckpoints)
 
-        val result = if (minimumValidTime == null || controlPointTimestamp < minimumValidTime) PASSED else FAILED
+        val result = when {
+            minimumValidTime == null || controlPointTimestamp > minimumValidTime -> PASSED
+            controlPointTimestamp == 0L -> INSUFFICIENT_DATA
+            else -> FAILED
+        }
 
         this.add(
             RuleValidation(
@@ -43,11 +47,11 @@ class ControlPointRuleValidator {
     }
 
     private fun MutableList<RuleValidation>.checkIfIsWithinToleranceRange(
-        controlPointLocation: Location,
+        controlPointLocation: Location?,
         stationLocation: Location,
     ): MutableList<RuleValidation> {
         val type = IS_WITHIN_TOLERANCE_RANGE
-        if (controlPointLocation.lat <= 0.0 || controlPointLocation.lng <= 0.0) {
+        if (controlPointLocation == null || controlPointLocation.lat <= 0.0 || controlPointLocation.lng <= 0.0) {
             this.add(
                 RuleValidation(
                     type = type,
@@ -57,11 +61,11 @@ class ControlPointRuleValidator {
             return this
         }
 
-        val distance = distanceCalculator.calculateDistance(
+        val distance = positionCalculator.calculateDistance(
             controlPointLocation,
             stationLocation,
         )
-        val tolerance = distanceCalculator.calculateTolerance(
+        val tolerance = positionCalculator.calculateTolerance(
             controlPointLocation.accuracy,
             stationLocation.accuracy
         )
