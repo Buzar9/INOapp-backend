@@ -6,6 +6,7 @@ data class RaceResultView(
     val participantUnit: String,
     val categoryName: String,
     val routeId: String,
+    val translatedStatus: String,
     val status: String,
     val startTime: String,
     val finishTime: String,

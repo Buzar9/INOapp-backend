@@ -33,7 +33,8 @@ class RunFacade(
 
         return InitiateRunResponse(
             runId = run.id,
-            backgroundMapId = category.backgroundMapId
+            backgroundMapId = category.backgroundMapId,
+            categoryName = category.name
         )
     }
 
