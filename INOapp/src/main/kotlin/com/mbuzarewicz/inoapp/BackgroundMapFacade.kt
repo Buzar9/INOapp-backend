@@ -4,6 +4,8 @@ import com.mbuzarewicz.inoapp.command.AddBackgroundMapCommand
 import com.mbuzarewicz.inoapp.command.DeleteBackgroundMapCommand
 import com.mbuzarewicz.inoapp.domain.model.BackgroundMap
 import com.mbuzarewicz.inoapp.domain.model.Location
+import com.mbuzarewicz.inoapp.domain.model.vo.Size
+import com.mbuzarewicz.inoapp.domain.model.vo.SizeUnit
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultBackgroundMapRepository
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapOptionsQuery
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapQuery
@@ -29,26 +31,23 @@ class BackgroundMapFacade(
         val backgroundMapId = UUID.randomUUID().toString()
 
         val templateMapMetadata = mapMetadataService.dodoInfo(filePath)!!
-        val zipPath = tilesSlicerService.slice(
+        val sliceResult = tilesSlicerService.slice(
             filePath,
             backgroundMapId,
             command.minZoom,
             command.maxZoom,
             templateMapMetadata.epsg
-        )
+        )!!
 
-//        dodo to jest tak na prawde backgroundMapId ale teoretycznie sliser moze cos zmienic i fasada o tym nie wie
-        val objectKey = zipPath!!.fileName.toString()
-        val contentType = Files.probeContentType(zipPath) ?: "application/zip"
-
+        val zipPath = sliceResult.zipPath
         storage.uploadFile(
             file = zipPath,
-            key = objectKey,
-            contentType = contentType,
+            key = zipPath.fileName.toString(),
+            contentType = Files.probeContentType(zipPath) ?: "application/zip",
             cacheControl = "public, max-age=31536000, immutable"
         )
 
-        val fileSize = Files.size(zipPath) / 1024 / 1024
+        val fileSize = Size(Files.size(zipPath), SizeUnit.BYTES)
 
         try {
             Files.deleteIfExists(zipPath)
@@ -97,6 +96,7 @@ class BackgroundMapFacade(
             id = backgroundMapId,
             name = command.name,
             fileSize = fileSize,
+            zoomsSize = sliceResult.fileSizeByZoom,
             minZoom = command.minZoom,
             maxZoom = command.maxZoom,
             northEast = northEast,

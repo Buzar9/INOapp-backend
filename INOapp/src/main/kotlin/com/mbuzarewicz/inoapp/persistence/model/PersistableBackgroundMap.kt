@@ -7,6 +7,7 @@ data class PersistableBackgroundMap(
     val id: String = "",
     val name: String = "",
     val fileSize: Long = 0L,
+    val zoomsSize: Map<String, Long> = emptyMap(),
     val minZoom: Int = 0,
     val maxZoom: Int = 0,
     val northEast: PersistableLocation = PersistableLocation(0.0, 0.0),

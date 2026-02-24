@@ -1,5 +1,7 @@
 package com.mbuzarewicz.inoapp
 
+import com.mbuzarewicz.inoapp.domain.model.vo.Size
+import com.mbuzarewicz.inoapp.domain.model.vo.SizeUnit
 import org.springframework.stereotype.Service
 import java.io.BufferedOutputStream
 import java.io.File
@@ -17,7 +19,7 @@ class TilesSlicerService {
     // Bazowy katalog na dane (ustaw w env TILES_OUTPUT_DIR; domyślnie /data/maps)
 //    private val outputBaseDir: Path = Paths.get(System.getenv("TILES_OUTPUT_DIR") ?: "/data/maps")
 
-    fun slice(inputFilePath: String, backgroundMapId: String, minZoom: Int, maxZoom: Int, epsg: String): Path? {
+    fun slice(inputFilePath: String, backgroundMapId: String, minZoom: Int, maxZoom: Int, epsg: String): SliceResult? {
         //        dodo mock
         val outputBaseDir = Paths.get("/Users/m.buzarewicz/IdeaProjects/INOapp-front/src/assets/maps")
 
@@ -56,11 +58,13 @@ class TilesSlicerService {
             logThread.join()
 
             if (exitCode == 0) {
+                val fileSizeByZoom = calculateFileSizeByZoom(outputDir)
+
                 zipPath = outputBaseDir.resolve("$backgroundMapId.zip")
                 Files.deleteIfExists(zipPath)
                 zipDirectory(outputDir, zipPath!!)
                 println("Pomyślnie utworzono ZIP: $zipPath")
-                return zipPath
+                return SliceResult(zipPath = zipPath, fileSizeByZoom = fileSizeByZoom)
             } else {
                 println("Błąd podczas kafelkowania, kod wyjścia: $exitCode")
                 return null
@@ -78,6 +82,23 @@ class TilesSlicerService {
                 println("Błąd podczas czyszczenia katalogu kafelków: ${cleanupEx.message}")
             }
         }
+    }
+
+    private fun calculateFileSizeByZoom(outputDir: Path): Map<Int, Size> {
+        val result = mutableMapOf<Int, Size>()
+        Files.list(outputDir).use { dirs ->
+            dirs.filter { Files.isDirectory(it) }
+                .forEach { zoomDir ->
+                    val zoom = zoomDir.fileName.toString().toIntOrNull() ?: return@forEach
+                    val sizeInBytes = Files.walk(zoomDir).use { paths ->
+                        paths.filter { Files.isRegularFile(it) }
+                            .mapToLong { Files.size(it) }
+                            .sum()
+                    }
+                    result[zoom] = Size(sizeInBytes, SizeUnit.BYTES)
+                }
+        }
+        return result
     }
 
     private fun zipDirectory(sourceDir: Path, zipFile: Path) {

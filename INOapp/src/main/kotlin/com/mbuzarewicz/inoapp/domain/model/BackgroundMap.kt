@@ -1,10 +1,12 @@
 package com.mbuzarewicz.inoapp.domain.model
 
+import com.mbuzarewicz.inoapp.domain.model.vo.Size
+
 data class BackgroundMap(
     val id: String,
     val name: String,
-//    dodo dodac value object i niech sam sie wylicza na front to robi i jest latwe
-    val fileSize: Long,
+    val fileSize: Size,
+    val zoomsSize: Map<Int, Size>,
     val minZoom: Int,
     val maxZoom: Int,
     val northEast: Location,

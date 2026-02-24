@@ -5,12 +5,17 @@ import com.mbuzarewicz.inoapp.persistence.model.PersistableBackgroundMap
 
 class PersistableBackgroundMapMapper {
 
+    private val sizeMapper = PersistableSizeMapper()
+
     fun mapToPersistableEntity(domain: BackgroundMap): PersistableBackgroundMap {
         return with(domain) {
             PersistableBackgroundMap(
                 id = id,
                 name = name,
-                fileSize = fileSize,
+                fileSize = sizeMapper.mapToPersistableValue(fileSize),
+                zoomsSize = zoomsSize.map { (zoom, size) ->
+                    zoom.toString() to sizeMapper.mapToPersistableValue(size)
+                }.toMap(),
                 minZoom = minZoom,
                 maxZoom = maxZoom,
                 northEast = PersistableLocationMapper().mapToPersistableEntity(northEast),
@@ -25,7 +30,10 @@ class PersistableBackgroundMapMapper {
             BackgroundMap(
                 id = id,
                 name = name,
-                fileSize = fileSize,
+                fileSize = sizeMapper.mapToDomainEntity(fileSize),
+                zoomsSize = zoomsSize.map { (zoom, size) ->
+                    zoom.toInt() to sizeMapper.mapToDomainEntity(size)
+                }.toMap(),
                 minZoom = minZoom,
                 maxZoom = maxZoom,
                 northEast = PersistableLocationMapper().mapToDomainEntity(northEast),
