@@ -11,16 +11,14 @@ class RegisterViewFacade(
 
     fun getData(): RegisterView {
         val competitions = competitionFacade.getAll()
-        val competitionUnits =
-            competitions.associate { competition -> competition.id to getCompetitionUnitsNames(competition.id) }
+        val competitionIds = competitions.map { it.id }
+
+        val unitsByCompetition = unitFacade.getAllForCompetitions(competitionIds)
+        val competitionUnits = unitsByCompetition.mapValues { (_, units) -> units.map { it.name } }
 
         return RegisterView(
             competitions = competitions.associate { it.id to it.name },
             competitionsUnits = competitionUnits
         )
-    }
-
-    private fun getCompetitionUnitsNames(competitionId: String): List<String> {
-        return unitFacade.getAllForCompetition(competitionId).map { it.name }
     }
 }

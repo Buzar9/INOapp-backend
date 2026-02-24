@@ -5,24 +5,17 @@ import com.mbuzarewicz.inoapp.domain.model.Route
 import com.mbuzarewicz.inoapp.domain.model.Station
 import com.mbuzarewicz.inoapp.domain.model.StationType
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultRouteRepository
-import com.mbuzarewicz.inoapp.query.GetConsolidatedRouteViewQuery
 import com.mbuzarewicz.inoapp.query.GetAllRoutesQuery
+import com.mbuzarewicz.inoapp.query.GetConsolidatedRouteViewQuery
 import com.mbuzarewicz.inoapp.query.GetRouteQuery
 import com.mbuzarewicz.inoapp.view.mapper.ViewConsolidatedStationMapper
 import com.mbuzarewicz.inoapp.view.mapper.ViewRouteMapper
 import com.mbuzarewicz.inoapp.view.model.ConsolidatedRouteView
 import com.mbuzarewicz.inoapp.view.model.RouteOptionView
 import com.mbuzarewicz.inoapp.view.model.RouteView
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 import java.util.*
 
-@RequestMapping(path = ["/backoffice/routes"], produces = [MediaType.APPLICATION_JSON_VALUE])
-@RestController
-@CrossOrigin(origins = ["http://localhost:4200"])
 @Component
 class RouteFacade(
     private val routeRepository: DefaultRouteRepository,
@@ -151,12 +144,17 @@ class RouteFacade(
     }
 
     fun getRouteOptions(query: GetAllRoutesQuery): List<RouteOptionView> {
-        val routes = routeRepository.getAll(query.competitionId)
+        val routes = routeRepository.getAllActive(query.competitionId)
         return routes.filter { it.isActive }.map { routeMapper.mapToOptionView(it) }
     }
 
     fun getRoute(id: String): Route? {
         return routeRepository.getById(id)
+    }
+
+    fun getByIds(routeIds: List<String>): List<Route> {
+        if (routeIds.isEmpty()) return emptyList()
+        return routeRepository.getByIds(routeIds)
     }
 
     fun getRouteView(query: GetRouteQuery): RouteView? {
@@ -181,11 +179,14 @@ class RouteFacade(
     }
 
     private fun getAllView(competitionId: String): List<RouteView> {
-        val routes = routeRepository.getAll(competitionId)
+        val routes = routeRepository.getAllActive(competitionId)
+        val activeRoutes = routes.filter { it.isActive }
 
-        return routes.filter { it.isActive }
-            .map {
-                routeMapper.mapToView(it, backgroundMapFacade.getById(it.backgroundMapId)!!)
-            }
+        val backgroundMapIds = activeRoutes.map { it.backgroundMapId }.distinct()
+        val backgroundMapsMap = backgroundMapFacade.getByIds(backgroundMapIds)
+
+        return activeRoutes.map { route ->
+            routeMapper.mapToView(route, backgroundMapsMap.find { route.backgroundMapId == it.id }!!)
+        }
     }
 }

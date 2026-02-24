@@ -53,22 +53,24 @@ class CategoryFacade(
 //        dodo mock
         val competitionId = "Competition123"
         val categories = categoryRepository.getAll(competitionId)
-//        dodo nie wiem czy to nie jest kupa, mozna zoptymalizowac strzaly bo przeciez kategorie beda mialy wspolna trase i mape
-        return categories.map {
+
+        val routeIds = categories.map { it.routeId }.distinct()
+        val backgroundMapIds = categories.map { it.backgroundMapId }.distinct()
+
+        val routesMap = routeFacade.getByIds(routeIds)
+        val backgroundMapsMap = backgroundMapFacade.getByIds(backgroundMapIds)
+
+        return categories.map {category ->
             categoryViewMapper.mapToView(
-                category = it,
-                route = routeFacade.getRoute(it.routeId),
-                backgroundMap = backgroundMapFacade.getById(it.backgroundMapId)!!
+                category = category,
+                route = routesMap.find { category.routeId == it.id }!!,
+                backgroundMap = backgroundMapsMap.find { category.backgroundMapId == it.id }!!
             )
         }
     }
 
     fun getById(id: String): Category? {
         return categoryRepository.getById(id)
-    }
-
-    fun getByNames(names: List<String>): List<Category>? {
-        return categoryRepository.getByNames(names)
     }
 
     //    dodo przy usuwaniu, trzeba zrobic tak, żeby oznaczyc ja jako nieaktywną??, żeby wszystko od tego zależne nadal moglo działać

@@ -15,6 +15,11 @@ class DefaultCompetitionUnitRepository(
         return persistableCompetitionUnit.map { mapper.mapToDomainEntity(it) }
     }
 
+    fun getAllByCompetitionIds(competitionIds: List<String>): List<CompetitionUnit> {
+        val persistableCompetitionUnits = repository.getAllByCompetitionIds(competitionIds)
+        return persistableCompetitionUnits.map { mapper.mapToDomainEntity(it) }
+    }
+
     fun findById(id: String): CompetitionUnit? {
         val persistableCompetitionUnit = repository.findById(id)
         return persistableCompetitionUnit?.let { mapper.mapToDomainEntity(it) }

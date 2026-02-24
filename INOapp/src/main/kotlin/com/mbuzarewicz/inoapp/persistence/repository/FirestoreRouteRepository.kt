@@ -50,6 +50,16 @@ class FirestoreRouteRepository(
         return snapshot.documents.map { it.toObject(PersistableRoute::class.java) }
     }
 
+    fun getByIds(routeIds: List<String>): List<PersistableRoute> {
+        if (routeIds.isEmpty()) return emptyList()
+        val documentRefs = routeIds.map { firestore.collection(collectionName).document(it) }
+        val query = firestore.collection(collectionName)
+            .whereIn(com.google.cloud.firestore.FieldPath.documentId(), documentRefs)
+            .get()
+        val snapshot = query.get()
+        return snapshot.documents.mapNotNull { it.toObject(PersistableRoute::class.java) }
+    }
+
     fun save(persistableRoute: PersistableRoute) {
         val id = persistableRoute.id
         val documentReference = if (id == null) {

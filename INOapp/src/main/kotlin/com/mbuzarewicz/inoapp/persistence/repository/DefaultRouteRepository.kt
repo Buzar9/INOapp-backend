@@ -15,28 +15,18 @@ class DefaultRouteRepository(
         return persistableRoute?.let { mapper.mapToDomainEntity(persistableRoute) }
     }
 
-    fun getByName(routeName: String): Route? {
-        val persistableRoute = repository.getByRouteName(routeName)
-        return persistableRoute?.let { mapper.mapToDomainEntity(persistableRoute) }
-    }
-
-//    dodo wymienic na getAllActive
-    fun getAll(competitionId: String): List<Route> {
-        val persistableRoutes = repository.getAll(competitionId)
+    fun getAllActive(competitionId: String): List<Route> {
+        val persistableRoutes = repository.getAllActive(competitionId)
         return persistableRoutes.map { mapper.mapToDomainEntity(it) }
     }
 
-    fun getAllActive(competitionId: String): List<Route> {
-        val persistableRoutes = repository.getAllActive(competitionId)
+    fun getByIds(routeIds: List<String>): List<Route> {
+        val persistableRoutes = repository.getByIds(routeIds)
         return persistableRoutes.map { mapper.mapToDomainEntity(it) }
     }
 
     fun save(route: Route) {
         val persistableRoute = mapper.mapToPersistableEntity(route)
         repository.save(persistableRoute)
-    }
-
-    fun deleteById(id: String) {
-        repository.delete(id)
     }
 }

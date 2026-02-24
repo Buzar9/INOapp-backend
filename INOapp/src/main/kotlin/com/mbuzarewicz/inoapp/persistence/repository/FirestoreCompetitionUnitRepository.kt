@@ -31,6 +31,14 @@ class FirestoreCompetitionUnitRepository(
         return snapshot.documents.map { it.toObject(PersistableCompetitionUnit::class.java) }
     }
 
+    fun getAllByCompetitionIds(competitionIds: List<String>): List<PersistableCompetitionUnit> {
+        if (competitionIds.isEmpty()) return emptyList()
+        val query = firestore.collection(collectionName).whereIn("competitionId", competitionIds)
+        val future = query.get()
+        val snapshot = future.get()
+        return snapshot.documents.mapNotNull { it.toObject(PersistableCompetitionUnit::class.java) }
+    }
+
     fun findById(id: String): PersistableCompetitionUnit? {
         val query = firestore.collection(collectionName).document(id)
         val future = query.get()

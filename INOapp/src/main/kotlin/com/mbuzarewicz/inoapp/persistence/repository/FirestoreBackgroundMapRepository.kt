@@ -24,8 +24,10 @@ class FirestoreBackgroundMapRepository(
     }
 
     fun getByIdIn(backgroundIds: List<String>): List<PersistableBackgroundMap> {
+        if (backgroundIds.isEmpty()) return emptyList()
+        val documentRefs = backgroundIds.map { firestore.collection(collectionName).document(it) }
         val query = firestore.collection(collectionName)
-            .whereIn("__name__", backgroundIds.map { firestore.collection(collectionName).document(it).path })
+            .whereIn(com.google.cloud.firestore.FieldPath.documentId(), documentRefs)
             .get()
         val snapshot = query.get()
         return snapshot.documents.mapNotNull { it.toObject(PersistableBackgroundMap::class.java) }

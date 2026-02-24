@@ -152,6 +152,11 @@ class BackgroundMapFacade(
         return repository.getById(id)
     }
 
+    fun getByIds(ids: List<String>): List<BackgroundMap> {
+        if (ids.isEmpty()) return emptyList()
+        return repository.getByIdIn(ids)
+    }
+
     fun getViewById(id: String): BackgroundMapView? {
         val backgroundMap = repository.getById(id) ?: return null
         return viewBackgroundMapMapper.mapToView(backgroundMap)

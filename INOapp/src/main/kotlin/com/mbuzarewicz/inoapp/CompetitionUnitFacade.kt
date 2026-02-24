@@ -30,7 +30,7 @@ class CompetitionUnitFacade(
     fun edit(command: EditCompetitionUnitCommand) {
         val competitionUnit = repository.findById(command.id)
 
-        if (competitionUnit == null) throw Exception()
+       competitionUnit ?: throw Exception()
 
         val updatedCompetitionUnit = competitionUnit.copy(
             name = command.name
@@ -47,7 +47,8 @@ class CompetitionUnitFacade(
         return competitionUnits.map { viewMapper.mapToView(it) }
     }
 
-    fun getAllForCompetition(competitionId: String): List<CompetitionUnit> {
-        return repository.getAllByCompetitionId(competitionId)
+    fun getAllForCompetitions(competitionIds: List<String>): Map<String, List<CompetitionUnit>> {
+        val units = repository.getAllByCompetitionIds(competitionIds)
+        return units.groupBy { it.competitionId }
     }
 }
