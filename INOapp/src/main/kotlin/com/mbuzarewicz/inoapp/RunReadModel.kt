@@ -10,6 +10,8 @@ data class RunReadModel(
     val participantName: String,
     val participantUnit: String,
     val status: RunStatus,
+    val categoryName: String,
+    val categoryRouteId: String,
     val startTime: Long? = null,
     val finishTime: Long? = null,
     val mainTime: Long? = null,

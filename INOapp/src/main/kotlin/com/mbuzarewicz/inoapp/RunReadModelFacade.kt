@@ -1,6 +1,7 @@
 package com.mbuzarewicz.inoapp
 
 import com.mbuzarewicz.inoapp.RunStatus.Companion.isAfterActivation
+import com.mbuzarewicz.inoapp.domain.model.Category
 import com.mbuzarewicz.inoapp.domain.model.StationType.CHECKPOINT
 import com.mbuzarewicz.inoapp.event.*
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunReadModelRepository
@@ -15,11 +16,7 @@ class RunReadModelFacade(
 ) {
     private val viewControlPointMapper = ViewControlPointViewMapper()
 
-    fun getByRunId(runId: String): RunReadModel? {
-        return repository.getByRunId(runId)
-    }
-
-    fun createIfNotExistOnRunInitializedEvent(event: RunInitiatedEvent) {
+    fun createIfNotExistOnRunInitializedEvent(event: RunInitiatedEvent, category: Category) {
         val runReadModel =
             RunReadModel(
                 id = event.runId,
@@ -29,6 +26,8 @@ class RunReadModelFacade(
                 participantName = event.participantName,
                 participantUnit = event.participantUnit,
                 status = event.status,
+                categoryName = category.name,
+                categoryRouteId = category.routeId,
             )
 
         repository.save(runReadModel)
@@ -68,8 +67,6 @@ class RunReadModelFacade(
             ?.map { controlPoint -> viewControlPointMapper.mapToView(controlPoint) }
             ?: emptyList()
 
-//        dodo 240840f9-d5ea-4476-8b15-7177f7913f5e
-
         return RunMetricAfterControlPoint(
             startTime = updatedRunReadModel?.startTime,
             finishTime = updatedRunReadModel?.finishTime,
@@ -84,16 +81,6 @@ class RunReadModelFacade(
     fun getAll(): List<RunReadModel> {
 //        dodo nałożenie warstwy competitionId
         return repository.getAll()
-    }
-
-    fun getFiltered(competitionUnits: List<String>, categories: List<String>, statues: List<String>): List<RunReadModel> {
-        val categoriesId =
-            if (categories.isNotEmpty()) {
-                categoryFacade.getByNames(categories)?.map { it.id } ?: emptyList()
-            } else {
-                emptyList()
-            }
-        return repository.getFiltered(competitionUnits, categoriesId, statues)
     }
 
     fun updateOnCanceledRunEvent(event: RunCanceledEvent) {

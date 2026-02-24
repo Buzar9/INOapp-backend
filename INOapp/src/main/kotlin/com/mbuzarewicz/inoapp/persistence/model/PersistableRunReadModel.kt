@@ -11,6 +11,9 @@ data class PersistableRunReadModel(
     val participantNickname: String = "",
     val participantUnit: String = "",
     val status: String = "",
+    val categoryName: String = "",
+//    dodo literowka do zmiany
+    val categoryRouteIde: String = "",
     val startTime: Long? = null,
     val finishTime: Long? = null,
     val mainTime: Long? = null,

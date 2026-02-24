@@ -226,6 +226,7 @@ class Run private constructor(
         )
     }
 
+//    dodo to  chyba powinno w agregacie pozostac prawdziwa wartoscia a w read modelu dodac losowa
     private fun getValidLocationOrRandom(ruleValidation: List<RuleValidation>, location: Location): Location {
         val isLocationInsufficientData = ruleValidation.firstOrNull { it.type == IS_WITHIN_TOLERANCE_RANGE }?.result == INSUFFICIENT_DATA
         return if (isLocationInsufficientData) {

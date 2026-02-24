@@ -29,7 +29,7 @@ class RunFacade(
             competitionId = command.competitionId,
         )
         runRepository.saveRun(run)
-        runReadModelFacade.createIfNotExistOnRunInitializedEvent(event)
+        runReadModelFacade.createIfNotExistOnRunInitializedEvent(event, category)
 
         return InitiateRunResponse(
             runId = run.id,

@@ -17,6 +17,8 @@ class PersistableRunReadModelMapper {
                 participantNickname = participantName,
                 participantUnit = participantUnit,
                 status = status.toString(),
+                categoryName = categoryName,
+                categoryRouteIde = categoryRouteId,
                 startTime = startTime,
                 finishTime = finishTime,
                 mainTime = mainTime
@@ -34,9 +36,11 @@ class PersistableRunReadModelMapper {
                 participantName = participantNickname,
                 participantUnit = participantUnit,
                 status = RunStatus.valueOf(status),
+                categoryName = categoryName,
+                categoryRouteId = categoryRouteIde,
                 startTime = startTime,
                 finishTime = finishTime,
-                mainTime = mainTime
+                mainTime = mainTime,
             )
         }
     }
