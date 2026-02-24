@@ -36,8 +36,8 @@ class BackofficeCategoryController(
 
     @PostMapping("/delete")
     @ResponseStatus(HttpStatus.OK)
-    fun delete(@RequestBody request: DeleteCategoryRequest) {
-        categoryFacade.delete(request.toCommand())
+    fun deactivate(@RequestBody request: DeleteCategoryRequest) {
+        categoryFacade.deactivate(request.toCommand())
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -50,7 +50,7 @@ class BackofficeCategoryController(
 
     @GetMapping
     fun get(): ResponseEntity<List<CategoryView>> {
-        val results = categoryFacade.getAll()
+        val results = categoryFacade.getAllActive()
         return ResponseEntity.status(200).body(results)
     }
 }

@@ -7,4 +7,5 @@ data class Category(
     val routeId: String,
     val maxTime: Long,
     val backgroundMapId: String,
+    val isActive: Boolean,
 )

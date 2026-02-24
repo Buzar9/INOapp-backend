@@ -10,27 +10,18 @@ class DefaultCategoryRepository(
 ) {
     private val mapper = PersistableCategoryMapper()
 
-    fun getById(id: String): Category? {
-        val persistableCategory = repository.getById(id)
+    fun getActiveById(id: String): Category? {
+        val persistableCategory = repository.getActiveById(id)
         return persistableCategory?.let { mapper.mapToDomainEntity(persistableCategory) }
     }
 
-    fun getByNames(names: List<String>): List<Category>? {
-        val persistableCategories = repository.getByCategoryName(names)
-        return persistableCategories?.map { mapper.mapToDomainEntity(it) }
-    }
-
-    fun getAll(competitionId: String): List<Category> {
-        val persistableCategory = repository.getAllByCompetitionId(competitionId)
+    fun getAllActive(competitionId: String): List<Category> {
+        val persistableCategory = repository.getAllActive(competitionId)
         return persistableCategory.map { mapper.mapToDomainEntity(it) }
     }
 
     fun save(category: Category) {
         val persistableCategory = mapper.mapToPersistableEntity(category)
         repository.save(persistableCategory)
-    }
-
-    fun delete(categoryId: String) {
-        repository.delete(categoryId)
     }
 }

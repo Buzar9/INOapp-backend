@@ -10,7 +10,7 @@ class MapMetadataService() {
 
     private val mapper = jacksonObjectMapper()
 
-    fun dodoInfo(inputFilePath: String): TemplateMapMetadata? {
+    fun getMetadata(inputFilePath: String): TemplateMapMetadata? {
         try {
             val gdalInfoCommand = arrayOf(
                 "gdalinfo",

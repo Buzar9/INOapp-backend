@@ -10,4 +10,5 @@ data class PersistableCategory(
     val routeId: String = "",
     val maxTime: Long = 0L,
     val backgroundMapId: String = "",
+    val active: Boolean = false,
 )

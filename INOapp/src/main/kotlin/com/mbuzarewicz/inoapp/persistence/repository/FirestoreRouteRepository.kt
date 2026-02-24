@@ -1,6 +1,7 @@
 package com.mbuzarewicz.inoapp.persistence.repository
 
 import com.google.api.core.ApiFuture
+import com.google.cloud.firestore.FieldPath
 import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRoute
@@ -12,32 +13,12 @@ class FirestoreRouteRepository(
 ) {
     private val collectionName = "route"
 
-    fun findById(id: String): PersistableRoute? {
+    fun findActiveById(id: String): PersistableRoute? {
         val query = firestore.collection(collectionName).document(id)
         val future = query.get()
-        val snapshot = future.get()
+        val document = future.get()
 
-        return if (snapshot.exists()) {
-            snapshot.toObject(PersistableRoute::class.java)
-        } else {
-            null
-        }
-    }
-
-    fun getByRouteName(routeName: String): PersistableRoute? {
-        val query = firestore.collection(collectionName).whereEqualTo("routeName", routeName)
-        val future = query.get()
-        val snapshot = future.get()
-
-        return snapshot.documents.firstNotNullOf { it.toObject(PersistableRoute::class.java) }
-    }
-
-    fun getAll(competitionId: String): List<PersistableRoute> {
-        val query = firestore.collection(collectionName).whereEqualTo("competitionId", competitionId)
-        val future = query.get()
-        val snapshot = future.get()
-
-        return snapshot.documents.map { it.toObject(PersistableRoute::class.java) }
+        return document.toObject(PersistableRoute::class.java)?.takeIf { it.active }
     }
 
     fun getAllActive(competitionId: String): List<PersistableRoute> {
@@ -50,11 +31,12 @@ class FirestoreRouteRepository(
         return snapshot.documents.map { it.toObject(PersistableRoute::class.java) }
     }
 
-    fun getByIds(routeIds: List<String>): List<PersistableRoute> {
+    fun getActiveByIds(routeIds: List<String>): List<PersistableRoute> {
         if (routeIds.isEmpty()) return emptyList()
         val documentRefs = routeIds.map { firestore.collection(collectionName).document(it) }
         val query = firestore.collection(collectionName)
-            .whereIn(com.google.cloud.firestore.FieldPath.documentId(), documentRefs)
+            .whereIn(FieldPath.documentId(), documentRefs)
+            .whereEqualTo("active", true)
             .get()
         val snapshot = query.get()
         return snapshot.documents.mapNotNull { it.toObject(PersistableRoute::class.java) }
@@ -69,10 +51,5 @@ class FirestoreRouteRepository(
         }
 
         val result: ApiFuture<*> = documentReference.set(persistableRoute, SetOptions.merge())
-    }
-
-    fun delete(id: String) {
-        val documentReference = firestore.collection(collectionName).document(id)
-        documentReference.delete()
     }
 }

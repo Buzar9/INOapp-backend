@@ -33,7 +33,8 @@ class CategoryFacade(
             routeId = command.routeId,
 //            dodo mock
             maxTime = 4,
-            backgroundMapId = route.backgroundMapId
+            backgroundMapId = route.backgroundMapId,
+            isActive = true
         )
         categoryRepository.save(category)
     }
@@ -44,15 +45,15 @@ class CategoryFacade(
     }
 
     fun getStationsByCategoryId(categoryId: String): List<Station> {
-        val category = categoryRepository.getById(categoryId) ?: throw Exception()
+        val category = categoryRepository.getActiveById(categoryId) ?: throw Exception()
         val route = routeFacade.getRoute(category.routeId) ?: throw Exception()
         return route.stations
     }
 
-    fun getAll(): List<CategoryView> {
+    fun getAllActive(): List<CategoryView> {
 //        dodo mock
         val competitionId = "Competition123"
-        val categories = categoryRepository.getAll(competitionId)
+        val categories = categoryRepository.getAllActive(competitionId)
 
         val routeIds = categories.map { it.routeId }.distinct()
         val backgroundMapIds = categories.map { it.backgroundMapId }.distinct()
@@ -60,7 +61,7 @@ class CategoryFacade(
         val routesMap = routeFacade.getByIds(routeIds)
         val backgroundMapsMap = backgroundMapFacade.getByIds(backgroundMapIds)
 
-        return categories.map {category ->
+        return categories.map { category ->
             categoryViewMapper.mapToView(
                 category = category,
                 route = routesMap.find { category.routeId == it.id }!!,
@@ -69,12 +70,17 @@ class CategoryFacade(
         }
     }
 
-    fun getById(id: String): Category? {
-        return categoryRepository.getById(id)
+    fun getActiveById(id: String): Category? {
+        return categoryRepository.getActiveById(id)
     }
 
-    //    dodo przy usuwaniu, trzeba zrobic tak, żeby oznaczyc ja jako nieaktywną??, żeby wszystko od tego zależne nadal moglo działać
-    fun delete(command: DeleteCategoryCommand) {
-        categoryRepository.delete(command.categoryId)
+    fun deactivate(command: DeleteCategoryCommand) {
+        val category = categoryRepository.getActiveById(command.categoryId)
+        category ?: throw Exception("dodo")
+
+        val updatedCategory = category.copy(
+            isActive = false
+        )
+        categoryRepository.save(updatedCategory)
     }
 }

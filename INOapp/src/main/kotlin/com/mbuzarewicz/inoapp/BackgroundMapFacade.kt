@@ -30,7 +30,7 @@ class BackgroundMapFacade(
     fun add(command: AddBackgroundMapCommand, filePath: String): String {
         val backgroundMapId = UUID.randomUUID().toString()
 
-        val templateMapMetadata = mapMetadataService.dodoInfo(filePath)!!
+        val templateMapMetadata = mapMetadataService.getMetadata(filePath)!!
         val sliceResult = tilesSlicerService.slice(
             filePath,
             backgroundMapId,

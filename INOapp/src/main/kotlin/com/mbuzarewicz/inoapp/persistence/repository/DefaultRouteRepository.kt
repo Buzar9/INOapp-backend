@@ -11,7 +11,7 @@ class DefaultRouteRepository(
     private val mapper = PersistableRouteMapper()
 
     fun getById(id: String): Route? {
-        val persistableRoute = repository.findById(id)
+        val persistableRoute = repository.findActiveById(id)
         return persistableRoute?.let { mapper.mapToDomainEntity(persistableRoute) }
     }
 
@@ -21,7 +21,7 @@ class DefaultRouteRepository(
     }
 
     fun getByIds(routeIds: List<String>): List<Route> {
-        val persistableRoutes = repository.getByIds(routeIds)
+        val persistableRoutes = repository.getActiveByIds(routeIds)
         return persistableRoutes.map { mapper.mapToDomainEntity(it) }
     }
 

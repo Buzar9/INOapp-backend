@@ -71,7 +71,6 @@ class BackofficeCompetitionUnitController(
 
     @GetMapping
     fun getAll(): ResponseEntity<List<CompetitionUnitView>> {
-//        dodo mock
         val competitionUnits = competitionUnitFacade.getAllForCompetition(GetAllCompetitionUnitQuery("Competition123"))
         return ResponseEntity.status(200).body(competitionUnits)
     }

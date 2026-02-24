@@ -25,7 +25,7 @@ class ParticipantBackgroundMapController(
         @RequestBody request: GetBackgroundMapRequest
     ): ResponseEntity<BackgroundMapView> {
 //        dodo troche kupa, bo nie nie wiadomo gdzie to ma byc w backgroundMap czy Category?
-        val category = categoryFacade.getById(request.categoryId)
+        val category = categoryFacade.getActiveById(request.categoryId)
         val backgroundMap = backgroundMapFacade.getViewById(category!!.backgroundMapId)
         return ResponseEntity.status(200).body(backgroundMap)
     }

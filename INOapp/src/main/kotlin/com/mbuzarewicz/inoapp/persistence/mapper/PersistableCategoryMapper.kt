@@ -13,7 +13,8 @@ class PersistableCategoryMapper {
                 competitionId = competitionId,
                 routeId = routeId,
                 maxTime = maxTime,
-                backgroundMapId = backgroundMapId
+                backgroundMapId = backgroundMapId,
+                active = isActive
             )
         }
     }
@@ -26,7 +27,8 @@ class PersistableCategoryMapper {
                 competitionId = competitionId,
                 routeId = routeId,
                 maxTime = maxTime,
-                backgroundMapId = backgroundMapId
+                backgroundMapId = backgroundMapId,
+                isActive = active
             )
         }
     }

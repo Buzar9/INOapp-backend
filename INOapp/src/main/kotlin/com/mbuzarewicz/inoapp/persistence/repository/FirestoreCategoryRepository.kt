@@ -12,24 +12,18 @@ class FirestoreCategoryRepository(
 ) {
     private val collectionName = "category"
 
-    fun getById(id: String): PersistableCategory? {
-        val documentReference = firestore.collection(collectionName).document(id)
-        val future = documentReference.get()
+    fun getActiveById(id: String): PersistableCategory? {
+        val query = firestore.collection(collectionName).document(id)
+        val future = query.get()
         val document = future.get()
 
-        return document.toObject(PersistableCategory::class.java)
+        return document.toObject(PersistableCategory::class.java)?.takeIf { it.active }
     }
 
-    fun getByCategoryName(names: List<String>): List<PersistableCategory>? {
-        val query = firestore.collection(collectionName).whereIn("name", names)
-        val future = query.get()
-        val snapshot = future.get()
-
-        return snapshot.documents.map { it.toObject(PersistableCategory::class.java) }
-    }
-
-    fun getAllByCompetitionId(competitionId: String): List<PersistableCategory> {
-        val query = firestore.collection(collectionName).whereEqualTo("competitionId", competitionId)
+    fun getAllActive(competitionId: String): List<PersistableCategory> {
+        val query = firestore.collection(collectionName)
+            .whereEqualTo("competitionId", competitionId)
+            .whereEqualTo("active", true)
         val future = query.get()
         val snapshot = future.get()
 
@@ -40,10 +34,5 @@ class FirestoreCategoryRepository(
         val documentReference = firestore.collection(collectionName).document(persistableCategory.id)
 
         val result: ApiFuture<*> = documentReference.set(persistableCategory, SetOptions.merge())
-    }
-
-    fun delete(id: String) {
-        val documentReference = firestore.collection(collectionName).document(id)
-        documentReference.delete()
     }
 }
