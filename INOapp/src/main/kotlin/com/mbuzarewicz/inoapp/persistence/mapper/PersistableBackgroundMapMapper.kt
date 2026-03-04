@@ -12,6 +12,7 @@ class PersistableBackgroundMapMapper {
             PersistableBackgroundMap(
                 id = id,
                 name = name,
+                competitionId = competitionId,
                 fileSize = sizeMapper.mapToPersistableValue(fileSize),
                 zoomsSize = zoomsSize.map { (zoom, size) ->
                     zoom.toString() to sizeMapper.mapToPersistableValue(size)
@@ -30,6 +31,7 @@ class PersistableBackgroundMapMapper {
             BackgroundMap(
                 id = id,
                 name = name,
+                competitionId = competitionId,
                 fileSize = sizeMapper.mapToDomainEntity(fileSize),
                 zoomsSize = zoomsSize.map { (zoom, size) ->
                     zoom.toInt() to sizeMapper.mapToDomainEntity(size)

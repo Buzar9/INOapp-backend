@@ -15,8 +15,8 @@ class DefaultRunReadModelRepository(
         return persistableRun?.let { mapper.mapToDomainEntity(persistableRun) }
     }
 
-    fun getAll(): List<RunReadModel> {
-        val persistableRunReadModels = repository.getAll()
+    fun getAll(competitionId: String): List<RunReadModel> {
+        val persistableRunReadModels = repository.getAll(competitionId)
         return persistableRunReadModels.map { mapper.mapToDomainEntity(it) }
     }
 

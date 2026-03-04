@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -40,8 +41,11 @@ class BackofficeCompetitionController(
         CreateCompetitionCommand(name = signature, adminPassword = adminPassword)
 
     @PostMapping("/competition/results")
-    fun getResults(@RequestBody request: GetResultsRequest): ResponseEntity<List<RaceResultView>> {
-        val query = request.toQuery()
+    fun getResults(
+        @RequestHeader("X-Competition-Id") competitionId: String,
+        @RequestBody request: GetResultsRequest
+    ): ResponseEntity<List<RaceResultView>> {
+        val query = request.toQuery(competitionId)
         val results = raceResultViewFacade.getResults(query)
         return ResponseEntity.status(200).body(results)
     }
@@ -52,6 +56,6 @@ class BackofficeCompetitionController(
         val pageNumber: Long
     )
 
-    private fun GetResultsRequest.toQuery() =
-        GetFilteredCompetitionResultsQuery(filter, pageNumber)
+    private fun GetResultsRequest.toQuery(competitionId: String) =
+        GetFilteredCompetitionResultsQuery(competitionId, filter, pageNumber)
 }

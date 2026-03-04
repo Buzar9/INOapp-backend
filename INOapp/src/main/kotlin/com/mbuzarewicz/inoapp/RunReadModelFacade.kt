@@ -78,9 +78,8 @@ class RunReadModelFacade(
         )
     }
 
-    fun getAll(): List<RunReadModel> {
-//        dodo nałożenie warstwy competitionId
-        return repository.getAll()
+    fun getAll(competitionId: String): List<RunReadModel> {
+        return repository.getAll(competitionId)
     }
 
     fun updateOnCanceledRunEvent(event: RunCanceledEvent) {

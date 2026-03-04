@@ -18,20 +18,20 @@ class BackofficeCategoryController(
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.OK)
-    fun create(@RequestBody request: CreateCategoryRequest) {
-        categoryFacade.create(request.toCommand())
+    fun create(
+        @RequestHeader("X-Competition-Id") competitionId: String,
+        @RequestBody request: CreateCategoryRequest
+    ) {
+        categoryFacade.create(request.toCommand(competitionId))
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class CreateCategoryRequest(
         val name: String,
         val routeId: String,
-//        dodo mock
-        val competitionId: String = "Competition123",
     )
 
-    private fun CreateCategoryRequest.toCommand() =
-//        dodo mock backgroundMapName
+    private fun CreateCategoryRequest.toCommand(competitionId: String) =
         CreateCategoryCommand(name = name, competitionId = competitionId, routeId = routeId)
 
     @PostMapping("/delete")
@@ -49,8 +49,10 @@ class BackofficeCategoryController(
         DeleteCategoryCommand(categoryId)
 
     @GetMapping
-    fun get(): ResponseEntity<List<CategoryView>> {
-        val results = categoryFacade.getAllActive()
+    fun get(
+        @RequestHeader("X-Competition-Id") competitionId: String
+    ): ResponseEntity<List<CategoryView>> {
+        val results = categoryFacade.getAllActive(competitionId)
         return ResponseEntity.status(200).body(results)
     }
 }

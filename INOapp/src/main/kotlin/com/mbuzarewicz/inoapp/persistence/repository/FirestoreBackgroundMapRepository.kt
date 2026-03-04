@@ -17,8 +17,10 @@ class FirestoreBackgroundMapRepository(
         val result: ApiFuture<*> = documentReference.set(backgroundMap, SetOptions.merge())
     }
 
-    fun getAll(): List<PersistableBackgroundMap> {
-        val query = firestore.collection(collectionName).get()
+    fun getAll(competitionId: String): List<PersistableBackgroundMap> {
+        val query = firestore.collection(collectionName)
+            .whereEqualTo("competitionId", competitionId)
+            .get()
         val snapshot = query.get()
         return snapshot.documents.mapNotNull { it.toObject(PersistableBackgroundMap::class.java) }
     }

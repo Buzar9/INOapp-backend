@@ -15,7 +15,7 @@ class RaceResultViewFacade(
 
     fun getResults(query: GetFilteredCompetitionResultsQuery): List<RaceResultView> {
 //        dodo bez filtrowania bo na firebase jest za drogie
-        val runReadModels = runReadModelFacade.getAll()
+        val runReadModels = runReadModelFacade.getAll(query.competitionId)
 
 //        dodo mapper do view ? jak jest gdzie indziej ?
 

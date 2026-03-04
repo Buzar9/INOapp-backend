@@ -95,6 +95,7 @@ class BackgroundMapFacade(
         val backgroundMap = BackgroundMap(
             id = backgroundMapId,
             name = command.name,
+            competitionId = command.competitionId,
             fileSize = fileSize,
             zoomsSize = sliceResult.fileSizeByZoom,
             minZoom = command.minZoom,

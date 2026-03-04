@@ -6,6 +6,7 @@ data class PersistableBackgroundMap(
     @DocumentId
     val id: String = "",
     val name: String = "",
+    val competitionId: String = "",
     val fileSize: Long = 0L,
     val zoomsSize: Map<String, Long> = emptyMap(),
     val minZoom: Int = 0,

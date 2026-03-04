@@ -22,19 +22,18 @@ class BackofficeCompetitionUnitController(
     @PostMapping(value = ["/add"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun add(
+        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: AddCompetitionUnitRequest
     ) {
-        competitionUnitFacade.add(request.toCommand())
-//        dodo obsluga bledow i zwrot odpowieniego http status
+        competitionUnitFacade.add(request.toCommand(competitionId))
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class AddCompetitionUnitRequest(
-        val competitionId: String = "Competition123",
         val name: String,
     )
 
-    private fun AddCompetitionUnitRequest.toCommand() = AddCompetitionUnitCommand(competitionId, name)
+    private fun AddCompetitionUnitRequest.toCommand(competitionId: String) = AddCompetitionUnitCommand(competitionId, name)
 
     @PostMapping(value = ["/edit"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -42,7 +41,6 @@ class BackofficeCompetitionUnitController(
         @RequestBody request: EditCompetitionUnitRequest
     ) {
         competitionUnitFacade.edit(request.toCommand())
-//        dodo obsluga bledow i zwrot odpowieniego http status
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -59,7 +57,6 @@ class BackofficeCompetitionUnitController(
         @RequestBody request: DeleteCompetitionUnitRequest
     ) {
         competitionUnitFacade.delete(request.toCommand())
-//        dodo obsluga bledow i zwrot odpowieniego http status
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -70,14 +67,10 @@ class BackofficeCompetitionUnitController(
     private fun DeleteCompetitionUnitRequest.toCommand() = DeleteCompetitionUnitCommand(id)
 
     @GetMapping
-    fun getAll(): ResponseEntity<List<CompetitionUnitView>> {
-        val competitionUnits = competitionUnitFacade.getAllForCompetition(GetAllCompetitionUnitQuery("Competition123"))
+    fun getAll(
+        @RequestHeader("X-Competition-Id") competitionId: String
+    ): ResponseEntity<List<CompetitionUnitView>> {
+        val competitionUnits = competitionUnitFacade.getAllForCompetition(GetAllCompetitionUnitQuery(competitionId))
         return ResponseEntity.status(200).body(competitionUnits)
     }
-
-    data class GetAllCompetitionUnitRequest(
-        val competitionId: String,
-    )
-
-    private fun GetAllCompetitionUnitRequest.toQuery() = GetAllCompetitionUnitQuery(competitionId)
 }

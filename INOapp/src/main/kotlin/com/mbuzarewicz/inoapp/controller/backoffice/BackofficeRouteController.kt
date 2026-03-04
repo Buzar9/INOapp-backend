@@ -1,7 +1,6 @@
 package com.mbuzarewicz.inoapp.controller.backoffice
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.mbuzarewicz.inoapp.RaceResultViewFacade
 import com.mbuzarewicz.inoapp.RouteFacade
 import com.mbuzarewicz.inoapp.command.*
 import com.mbuzarewicz.inoapp.domain.model.Location
@@ -25,21 +24,20 @@ class BackofficeRouteController(
     @PostMapping(value = ["/create"])
     @ResponseStatus(HttpStatus.OK)
     fun addRoute(
+        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody addRouteRequest: AddRouteRequest
     ): ResponseEntity<RouteView> {
-        val newRoute = routeFacade.addRoute(addRouteRequest.toCommand())
+        val newRoute = routeFacade.addRoute(addRouteRequest.toCommand(competitionId))
         return ResponseEntity.status(200).body(newRoute)
-//        dodo obsluga bledow i zwrot odpowieniego http status
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class AddRouteRequest(
         val name: String,
         val backgroundMapId: String,
-        val competitionId: String,
     )
 
-    private fun AddRouteRequest.toCommand() = AddRouteCommand(name, backgroundMapId, competitionId)
+    private fun AddRouteRequest.toCommand(competitionId: String) = AddRouteCommand(name, backgroundMapId, competitionId)
 
     @PostMapping(value = ["/edit_route"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -61,20 +59,19 @@ class BackofficeRouteController(
     @PostMapping(value = ["/delete_route"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteRoute(
+        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: DeleteRouteRequest
     ): ResponseEntity<List<RouteView>> {
-        val updatedRoute = routeFacade.deactivate(request.toCommand())
+        val updatedRoute = routeFacade.deactivate(request.toCommand(competitionId))
         return ResponseEntity.status(200).body(updatedRoute)
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class DeleteRouteRequest(
-//        dodo mock
-        val competitionId: String = "Competition123",
         val routeId: String,
     )
 
-    private fun DeleteRouteRequest.toCommand() = DeleteRouteCommand(competitionId, routeId)
+    private fun DeleteRouteRequest.toCommand(competitionId: String) = DeleteRouteCommand(competitionId, routeId)
 
 //    dodo zrobic walidacje, że może być tylko jeden start i jedna meta
     @PostMapping(value = ["/add_station"])
@@ -156,39 +153,25 @@ class BackofficeRouteController(
 
     @PostMapping
     fun getAll(
-        @RequestBody request: GetAllRoutesRequest
+        @RequestHeader("X-Competition-Id") competitionId: String
     ): ResponseEntity<List<RouteView>> {
-        val routesViews = routeFacade.getAllView(request.toQuery())
+        val routesViews = routeFacade.getAllView(GetAllRoutesQuery(competitionId))
         return ResponseEntity.status(200).body(routesViews)
     }
 
     @PostMapping(value = ["/options"])
     fun getRouteOptions(
-        @RequestBody request: GetAllRoutesRequest
+        @RequestHeader("X-Competition-Id") competitionId: String
     ): ResponseEntity<List<RouteOptionView>> {
-        val routesViews = routeFacade.getRouteOptions(request.toQuery())
+        val routesViews = routeFacade.getRouteOptions(GetAllRoutesQuery(competitionId))
         return ResponseEntity.status(200).body(routesViews)
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class GetAllRoutesRequest(
-        val competitionId: String,
-    )
-
-    private fun GetAllRoutesRequest.toQuery() = GetAllRoutesQuery(competitionId)
-
     @PostMapping(value = ["/consolidated_routes"])
     fun getConsolidatedRouteView(
-        @RequestBody request: GetConsolidatedRouteViewRequest
+        @RequestHeader("X-Competition-Id") competitionId: String
     ): ResponseEntity<ConsolidatedRouteView> {
-        val consolidatedRouteView = routeFacade.getConsolidatedStationView(request.toQuery())
+        val consolidatedRouteView = routeFacade.getConsolidatedStationView(GetConsolidatedRouteViewQuery(competitionId))
         return ResponseEntity.status(200).body(consolidatedRouteView)
     }
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    data class GetConsolidatedRouteViewRequest(
-        val competitionId: String,
-    )
-
-    private fun GetConsolidatedRouteViewRequest.toQuery() = GetConsolidatedRouteViewQuery(competitionId)
 }

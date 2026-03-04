@@ -26,9 +26,10 @@ class FirestoreRunReadModelRepository(
         }
     }
 
-    //    dodo competitionId
-    fun getAll(): List<PersistableRunReadModel> {
-        val documents = firestore.collection(collectionName).get().get().documents
+    fun getAll(competitionId: String): List<PersistableRunReadModel> {
+        val documents = firestore.collection(collectionName)
+            .whereEqualTo("competitionId", competitionId)
+            .get().get().documents
         return documents.map { it.toObject(PersistableRunReadModel::class.java) }
     }
 

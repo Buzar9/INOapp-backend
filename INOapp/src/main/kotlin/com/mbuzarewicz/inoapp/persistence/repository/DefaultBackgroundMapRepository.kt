@@ -21,8 +21,7 @@ class DefaultBackgroundMapRepository(
     }
 
     fun getAll(competitionId: String): List<BackgroundMap> {
-//        dodo dodac warstwe competitionId w BackgroundMap
-        val persistableBackgroundMaps = repository.getAll()
+        val persistableBackgroundMaps = repository.getAll(competitionId)
         return persistableBackgroundMaps.map { mapper.mapToDomainEntity(it) }
     }
 

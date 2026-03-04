@@ -50,9 +50,7 @@ class CategoryFacade(
         return route.stations
     }
 
-    fun getAllActive(): List<CategoryView> {
-//        dodo mock
-        val competitionId = "Competition123"
+    fun getAllActive(competitionId: String): List<CategoryView> {
         val categories = categoryRepository.getAllActive(competitionId)
 
         val routeIds = categories.map { it.routeId }.distinct()
