@@ -19,7 +19,7 @@ object TranslateService {
 
     private fun loadTranslations(category: String): Map<String, String> {
         val resourcePath = "translations/${category}.json"
-        val inputStream = javaClass.classLoader.getResourceAsStream(resourcePath)
+        val inputStream = this::class.java.getResourceAsStream("/$resourcePath")
             ?: throw IOException("Resource '$resourcePath' not found.")
 
         val typeReference = object : TypeReference<Map<String, String>>() {}
