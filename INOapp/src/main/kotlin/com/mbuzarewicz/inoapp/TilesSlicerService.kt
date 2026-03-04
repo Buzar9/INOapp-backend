@@ -7,7 +7,6 @@ import java.io.BufferedOutputStream
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.Comparator
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -16,14 +15,9 @@ import java.util.zip.ZipOutputStream
 //dodo zrobić z tego port adapter z interfejsem
 class TilesSlicerService {
 
-    // Bazowy katalog na dane (ustaw w env TILES_OUTPUT_DIR; domyślnie /data/maps)
-//    private val outputBaseDir: Path = Paths.get(System.getenv("TILES_OUTPUT_DIR") ?: "/data/maps")
-
     fun slice(inputFilePath: String, backgroundMapId: String, minZoom: Int, maxZoom: Int, epsg: String): SliceResult? {
-        //        dodo mock
-        val outputBaseDir = Paths.get("/Users/m.buzarewicz/IdeaProjects/INOapp-front/src/assets/maps")
-
-        val outputDir = outputBaseDir.resolve(backgroundMapId)
+        val tempDir = Files.createTempDirectory("tiles-")
+        val outputDir = tempDir.resolve(backgroundMapId)
 
         var zipPath: Path? = null
 
@@ -60,7 +54,7 @@ class TilesSlicerService {
             if (exitCode == 0) {
                 val fileSizeByZoom = calculateFileSizeByZoom(outputDir)
 
-                zipPath = outputBaseDir.resolve("$backgroundMapId.zip")
+                zipPath = tempDir.resolve("$backgroundMapId.zip")
                 Files.deleteIfExists(zipPath)
                 zipDirectory(outputDir, zipPath!!)
                 println("Pomyślnie utworzono ZIP: $zipPath")

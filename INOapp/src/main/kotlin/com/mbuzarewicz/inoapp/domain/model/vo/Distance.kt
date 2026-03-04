@@ -4,7 +4,6 @@ import com.mbuzarewicz.inoapp.domain.model.vo.DistanceUnit.KILOMETERS
 import com.mbuzarewicz.inoapp.domain.model.vo.DistanceUnit.METERS
 
 data class Distance(
-//    dodo BigDecimal
     val value: Double,
     val unit: DistanceUnit,
 ) : Comparable<Distance> {

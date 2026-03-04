@@ -17,7 +17,6 @@ class RunFacade(
 ) {
 
     fun initiateRun(command: InitiateRunCommand): InitiateRunResponse {
-//        dodo nałożyć na wszystko jeszcze warstwe competition, bo teraz wszystkie trasy sa wrzucane do jednego worka, a nie powinno tak byc
 //        dodo troche kupa z exception
 
         val category = categoryFacade.getActiveById(command.categoryId) ?: throw Exception()
