@@ -6,7 +6,6 @@ import com.mbuzarewicz.inoapp.command.AddCompetitionUnitCommand
 import com.mbuzarewicz.inoapp.command.DeleteCompetitionUnitCommand
 import com.mbuzarewicz.inoapp.command.EditCompetitionUnitCommand
 import com.mbuzarewicz.inoapp.query.GetAllCompetitionUnitQuery
-import com.mbuzarewicz.inoapp.view.CompetitionUnitView
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -69,7 +68,7 @@ class BackofficeCompetitionUnitController(
     @GetMapping
     fun getAll(
         @RequestHeader("X-Competition-Id") competitionId: String
-    ): ResponseEntity<List<CompetitionUnitView>> {
+    ): ResponseEntity<*> {
         val competitionUnits = competitionUnitFacade.getAllForCompetition(GetAllCompetitionUnitQuery(competitionId))
         return ResponseEntity.status(200).body(competitionUnits)
     }

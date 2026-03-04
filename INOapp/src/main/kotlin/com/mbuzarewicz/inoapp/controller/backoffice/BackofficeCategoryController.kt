@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.CategoryFacade
 import com.mbuzarewicz.inoapp.command.CreateCategoryCommand
 import com.mbuzarewicz.inoapp.command.DeleteCategoryCommand
-import com.mbuzarewicz.inoapp.view.model.CategoryView
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -51,7 +50,7 @@ class BackofficeCategoryController(
     @GetMapping
     fun get(
         @RequestHeader("X-Competition-Id") competitionId: String
-    ): ResponseEntity<List<CategoryView>> {
+    ): ResponseEntity<*> {
         val results = categoryFacade.getAllActive(competitionId)
         return ResponseEntity.status(200).body(results)
     }

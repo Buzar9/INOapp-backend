@@ -3,14 +3,9 @@ package com.mbuzarewicz.inoapp.controller.participant
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.BackgroundMapFacade
 import com.mbuzarewicz.inoapp.CategoryFacade
-import com.mbuzarewicz.inoapp.view.model.BackgroundMapView
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(path = ["/background_maps"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -23,7 +18,7 @@ class ParticipantBackgroundMapController(
     @PostMapping
     fun getBackgroundMap(
         @RequestBody request: GetBackgroundMapRequest
-    ): ResponseEntity<BackgroundMapView> {
+    ): ResponseEntity<*> {
 //        dodo troche kupa, bo nie nie wiadomo gdzie to ma byc w backgroundMap czy Category?
         val category = categoryFacade.getActiveById(request.categoryId)
         val backgroundMap = backgroundMapFacade.getViewById(category!!.backgroundMapId)

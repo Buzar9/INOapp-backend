@@ -3,7 +3,6 @@ package com.mbuzarewicz.inoapp.controller.participant
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.CategoryFacade
 import com.mbuzarewicz.inoapp.query.GetStationsByCategoryIdQuery
-import com.mbuzarewicz.inoapp.view.model.GeoView
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -16,7 +15,7 @@ class ParticipantCategoryController(
 ) {
 
     @PostMapping("/stations")
-    fun getStations(@RequestBody request: GetStationsForCategoryRequest): ResponseEntity<List<GeoView>> {
+    fun getStations(@RequestBody request: GetStationsForCategoryRequest): ResponseEntity<*> {
         val result = categoryFacade.getStationsGeoViewByCategoryId(request.toQuery())
         return ResponseEntity.status(200).body(result)
     }

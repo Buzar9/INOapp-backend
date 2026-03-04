@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.RunFacade
 import com.mbuzarewicz.inoapp.command.AddControlPointCommand
 import com.mbuzarewicz.inoapp.command.CancelRunCommand
-import com.mbuzarewicz.inoapp.view.model.RunMetricAfterControlPoint
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -21,7 +20,7 @@ class BackofficeRunController(
     @ResponseStatus(HttpStatus.OK)
     fun addControlPoint(
         @RequestBody request: AddControlPointRequest
-    ): ResponseEntity<RunMetricAfterControlPoint> {
+    ): ResponseEntity<*> {
 //        dodo przy podwojnym zeskanowaniu wywala NPE albo przy zeskanowaniu punktu kontrolnego nie ze swojej trasy
         val runMetricAfterControlPoint = runFacade.addControlPoint(request.toCommand())
         return ResponseEntity.status(200).body(runMetricAfterControlPoint)

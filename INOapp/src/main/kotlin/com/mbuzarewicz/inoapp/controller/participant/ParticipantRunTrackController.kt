@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.RunTrackFacade
 import com.mbuzarewicz.inoapp.command.AppendRunTrackPointsCommand
 import com.mbuzarewicz.inoapp.domain.model.RunTrackPoint
-import com.mbuzarewicz.inoapp.view.model.RunTrackView
 import com.mbuzarewicz.inoapp.query.GetRunTrackQuery
-import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -20,15 +18,9 @@ class ParticipantRunTrackController(
     @PostMapping("/batch")
     fun uploadRunTrackBatch(
         @RequestBody request: RunTrackBatchRequest
-    ): ResponseEntity<Map<String, Any>> {
-        return try {
-            val result = runTrackFacade.uploadRunTrackBatch(request.toCommand())
-            ResponseEntity.ok(result)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(mapOf("error" to (e.message ?: "Unknown error")))
-        }
+    ): ResponseEntity<*> {
+        val result = runTrackFacade.uploadRunTrackBatch(request.toCommand())
+        return ResponseEntity.ok(result)
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -43,9 +35,9 @@ class ParticipantRunTrackController(
     )
 
     @PostMapping
-    fun getRunTrack(@RequestBody request: GetRunTrackRequest): ResponseEntity<RunTrackView> {
-            val response = runTrackFacade.getRunTrack(request.toQuery())
-            return ResponseEntity.ok(response)
+    fun getRunTrack(@RequestBody request: GetRunTrackRequest): ResponseEntity<*> {
+        val response = runTrackFacade.getRunTrack(request.toQuery())
+        return ResponseEntity.ok(response)
     }
 
     @JsonIgnoreProperties

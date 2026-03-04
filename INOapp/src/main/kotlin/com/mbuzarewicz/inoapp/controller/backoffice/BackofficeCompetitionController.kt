@@ -5,15 +5,9 @@ import com.mbuzarewicz.inoapp.CompetitionFacade
 import com.mbuzarewicz.inoapp.RaceResultViewFacade
 import com.mbuzarewicz.inoapp.command.CreateCompetitionCommand
 import com.mbuzarewicz.inoapp.query.GetFilteredCompetitionResultsQuery
-import com.mbuzarewicz.inoapp.view.model.RaceResultView
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CrossOrigin
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping(path = ["/backoffice"], produces = [MediaType.APPLICATION_JSON_VALUE])
@@ -24,7 +18,7 @@ class BackofficeCompetitionController(
 ) {
 
     @PostMapping("/create")
-    fun create(@RequestBody request: CreateCompetitionRequest): ResponseEntity<String> {
+    fun create(@RequestBody request: CreateCompetitionRequest): ResponseEntity<*> {
 //        dodo obsluga tworzenia nowego Competiton
 //        if (repo.findByName(req.name) != null) return ResponseEntity.badRequest().body("Contest exists")
         val competitionId = competitionFacade.create(request.toCommand())
@@ -44,7 +38,7 @@ class BackofficeCompetitionController(
     fun getResults(
         @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: GetResultsRequest
-    ): ResponseEntity<List<RaceResultView>> {
+    ): ResponseEntity<*> {
         val query = request.toQuery(competitionId)
         val results = raceResultViewFacade.getResults(query)
         return ResponseEntity.status(200).body(results)

@@ -1,10 +1,9 @@
-package com.mbuzarewicz.inoapp.controler
+package com.mbuzarewicz.inoapp.controller
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.CompetitionFacade
 import com.mbuzarewicz.inoapp.RaceResultViewFacade
 import com.mbuzarewicz.inoapp.command.CreateCompetitionCommand
-import com.mbuzarewicz.inoapp.view.model.RaceResultView
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -17,7 +16,7 @@ class SecurityController(
 ) {
 
     @PostMapping("/create")
-    fun create(@RequestBody request: CreateCompetitionRequest): ResponseEntity<String> {
+    fun create(@RequestBody request: CreateCompetitionRequest): ResponseEntity<*> {
 //        dodo obsluga tworzenia nowego Competiton
 //        if (repo.findByName(req.name) != null) return ResponseEntity.badRequest().body("Contest exists")
         val competitionId = competitionFacade.create(request.toCommand())
@@ -33,10 +32,4 @@ class SecurityController(
     private fun CreateCompetitionRequest.toCommand() =
         CreateCompetitionCommand(name = signature, adminPassword = adminPassword)
 
-//     dodo
-//    @GetMapping("/competition/results")
-//    fun getResults(): ResponseEntity<List<RaceResultView>> {
-//        val results = raceResultViewFacade.getResults()
-//        return ResponseEntity.status(200).body(results)
-//    }
 }

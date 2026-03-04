@@ -6,9 +6,6 @@ import com.mbuzarewicz.inoapp.command.*
 import com.mbuzarewicz.inoapp.domain.model.Location
 import com.mbuzarewicz.inoapp.query.GetAllRoutesQuery
 import com.mbuzarewicz.inoapp.query.GetConsolidatedRouteViewQuery
-import com.mbuzarewicz.inoapp.view.model.ConsolidatedRouteView
-import com.mbuzarewicz.inoapp.view.model.RouteOptionView
-import com.mbuzarewicz.inoapp.view.model.RouteView
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -26,7 +23,7 @@ class BackofficeRouteController(
     fun addRoute(
         @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody addRouteRequest: AddRouteRequest
-    ): ResponseEntity<RouteView> {
+    ): ResponseEntity<*> {
         val newRoute = routeFacade.addRoute(addRouteRequest.toCommand(competitionId))
         return ResponseEntity.status(200).body(newRoute)
     }
@@ -43,7 +40,7 @@ class BackofficeRouteController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun editRoute(
         @RequestBody request: EditRouteRequest
-    ): ResponseEntity<RouteView> {
+    ): ResponseEntity<*> {
         val updatedRoute = routeFacade.editRoute(request.toCommand())
         return ResponseEntity.status(200).body(updatedRoute)
     }
@@ -61,7 +58,7 @@ class BackofficeRouteController(
     fun deleteRoute(
         @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: DeleteRouteRequest
-    ): ResponseEntity<List<RouteView>> {
+    ): ResponseEntity<*> {
         val updatedRoute = routeFacade.deactivate(request.toCommand(competitionId))
         return ResponseEntity.status(200).body(updatedRoute)
     }
@@ -78,7 +75,7 @@ class BackofficeRouteController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun addStation(
         @RequestBody request: AddStationRequest
-    ): ResponseEntity<RouteView> {
+    ): ResponseEntity<*> {
         val updatedRoute = routeFacade.addStation(request.toCommand())
         return ResponseEntity.status(200).body(updatedRoute)
     }
@@ -99,7 +96,7 @@ class BackofficeRouteController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun editStation(
         @RequestBody request: EditStationRequest
-    ): ResponseEntity<RouteView> {
+    ): ResponseEntity<*> {
         val updatedRoute = routeFacade.editStation(request.toCommand())
         return ResponseEntity.status(200).body(updatedRoute)
     }
@@ -121,7 +118,7 @@ class BackofficeRouteController(
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteStation(
         @RequestBody request: DeleteStationRequest
-    ): ResponseEntity<RouteView> {
+    ): ResponseEntity<*> {
         val updatedRoute = routeFacade.deleteStation(request.toCommand())
         return ResponseEntity.status(200).body(updatedRoute)
     }
@@ -138,7 +135,7 @@ class BackofficeRouteController(
     @ResponseStatus(HttpStatus.OK)
     fun toggleStationMount(
         @RequestBody request: ToggleStationMountRequest
-    ): ResponseEntity<RouteView> {
+    ): ResponseEntity<*> {
         val updatedRoute = routeFacade.toggleStationMount(request.toCommand())
         return ResponseEntity.status(200).body(updatedRoute)
     }
@@ -154,7 +151,7 @@ class BackofficeRouteController(
     @PostMapping
     fun getAll(
         @RequestHeader("X-Competition-Id") competitionId: String
-    ): ResponseEntity<List<RouteView>> {
+    ): ResponseEntity<*> {
         val routesViews = routeFacade.getAllView(GetAllRoutesQuery(competitionId))
         return ResponseEntity.status(200).body(routesViews)
     }
@@ -162,7 +159,7 @@ class BackofficeRouteController(
     @PostMapping(value = ["/options"])
     fun getRouteOptions(
         @RequestHeader("X-Competition-Id") competitionId: String
-    ): ResponseEntity<List<RouteOptionView>> {
+    ): ResponseEntity<*> {
         val routesViews = routeFacade.getRouteOptions(GetAllRoutesQuery(competitionId))
         return ResponseEntity.status(200).body(routesViews)
     }
@@ -170,7 +167,7 @@ class BackofficeRouteController(
     @PostMapping(value = ["/consolidated_routes"])
     fun getConsolidatedRouteView(
         @RequestHeader("X-Competition-Id") competitionId: String
-    ): ResponseEntity<ConsolidatedRouteView> {
+    ): ResponseEntity<*> {
         val consolidatedRouteView = routeFacade.getConsolidatedStationView(GetConsolidatedRouteViewQuery(competitionId))
         return ResponseEntity.status(200).body(consolidatedRouteView)
     }

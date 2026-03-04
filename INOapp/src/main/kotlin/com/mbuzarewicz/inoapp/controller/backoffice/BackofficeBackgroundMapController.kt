@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.BackgroundMapFacade
 import com.mbuzarewicz.inoapp.command.AddBackgroundMapCommand
 import com.mbuzarewicz.inoapp.command.DeleteBackgroundMapCommand
+import com.mbuzarewicz.inoapp.controller.ErrorResponse
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapOptionsQuery
 import com.mbuzarewicz.inoapp.query.GetAllBackgroundMapQuery
-import com.mbuzarewicz.inoapp.view.model.BackgroundMapOptionView
-import com.mbuzarewicz.inoapp.view.model.BackgroundMapView
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -35,13 +34,13 @@ class BackofficeBackgroundMapController(
         @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestPart("file") file: MultipartFile,
         @RequestPart("metadata") request: AddBackgroundMapRequest
-    ): ResponseEntity<String> {
+    ): ResponseEntity<*> {
         if (file.isEmpty) {
-            return ResponseEntity.badRequest().body("Proszę załączyć plik.")
+            return ResponseEntity.badRequest().body(ErrorResponse(400, "Bad Request", "Proszę załączyć plik."))
         }
 
         if (!file.contentType.equals("image/tiff")) {
-            return ResponseEntity.badRequest().body("Dozwolony jest tylko format GeoTIFF (image/tiff).")
+            return ResponseEntity.badRequest().body(ErrorResponse(400, "Bad Request", "Dozwolony jest tylko format GeoTIFF (image/tiff)."))
         }
 
         val command = request.toCommand(competitionId)
@@ -50,16 +49,11 @@ class BackofficeBackgroundMapController(
         Files.createDirectories(tempDir)
         val uploadedFile = File(tempDir.resolve(command.name + "_" + file.originalFilename).toString())
 
-        return try {
-            file.transferTo(uploadedFile)
-            val filePath = uploadedFile.absolutePath
+        file.transferTo(uploadedFile)
+        val filePath = uploadedFile.absolutePath
 
-            val confirmation = backgroundMapFacade.add(command, filePath)
-            ResponseEntity.ok(confirmation)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Wystąpił błąd podczas zapisywania pliku.")
-        }
+        val confirmation = backgroundMapFacade.add(command, filePath)
+        return ResponseEntity.ok(confirmation)
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -75,7 +69,7 @@ class BackofficeBackgroundMapController(
     @PostMapping("/options")
     fun getAllOptions(
         @RequestHeader("X-Competition-Id") competitionId: String
-    ): ResponseEntity<List<BackgroundMapOptionView>> {
+    ): ResponseEntity<*> {
         val options = backgroundMapFacade.getBackgroundMapOptions(GetAllBackgroundMapOptionsQuery(competitionId))
         return ResponseEntity.status(200).body(options)
     }
@@ -83,7 +77,7 @@ class BackofficeBackgroundMapController(
     @PostMapping
     fun getAll(
         @RequestHeader("X-Competition-Id") competitionId: String
-    ): ResponseEntity<List<BackgroundMapView>> {
+    ): ResponseEntity<*> {
         val backgroundMaps = backgroundMapFacade.getAll(GetAllBackgroundMapQuery(competitionId))
         return ResponseEntity.status(200).body(backgroundMaps)
     }
