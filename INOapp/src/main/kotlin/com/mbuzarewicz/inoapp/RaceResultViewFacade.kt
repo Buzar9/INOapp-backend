@@ -37,7 +37,8 @@ class RaceResultViewFacade(
                 finishTime = finishTimeToDisplay,
                 mainTime = mainTimeToDisplay,
                 controlPoints = it.controlPoints.map { controlPoint -> viewControlPointMapper.mapToView(controlPoint) }
-                    .sortedWith(compareBy { controlPoint -> controlPoint.timestamp })
+                    .sortedWith(compareBy { controlPoint -> controlPoint.timestamp }),
+                runTrackId = it.runTrackId
             )
         }
 

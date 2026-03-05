@@ -11,5 +11,6 @@ data class RaceResultView(
     val startTime: String,
     val finishTime: String,
     val mainTime: String,
-    val controlPoints: List<ControlPointView>
+    val controlPoints: List<ControlPointView>,
+    val runTrackId: String? = null
 )

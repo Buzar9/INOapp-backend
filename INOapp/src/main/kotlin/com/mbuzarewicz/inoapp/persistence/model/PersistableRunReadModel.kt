@@ -17,4 +17,5 @@ data class PersistableRunReadModel(
     val startTime: Long? = null,
     val finishTime: Long? = null,
     val mainTime: Long? = null,
+    val runTrackId: String? = null,
 )

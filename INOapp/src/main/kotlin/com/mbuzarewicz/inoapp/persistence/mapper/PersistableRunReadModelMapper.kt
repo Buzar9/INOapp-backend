@@ -21,7 +21,8 @@ class PersistableRunReadModelMapper {
                 categoryRouteIde = categoryRouteId,
                 startTime = startTime,
                 finishTime = finishTime,
-                mainTime = mainTime
+                mainTime = mainTime,
+                runTrackId = runTrackId
             )
         }
     }
@@ -41,6 +42,7 @@ class PersistableRunReadModelMapper {
                 startTime = startTime,
                 finishTime = finishTime,
                 mainTime = mainTime,
+                runTrackId = runTrackId,
             )
         }
     }

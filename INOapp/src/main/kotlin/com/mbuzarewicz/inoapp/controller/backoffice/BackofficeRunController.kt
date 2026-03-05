@@ -2,6 +2,7 @@ package com.mbuzarewicz.inoapp.controller.backoffice
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.mbuzarewicz.inoapp.RunFacade
+import com.mbuzarewicz.inoapp.RunTrackFacade
 import com.mbuzarewicz.inoapp.command.AddControlPointCommand
 import com.mbuzarewicz.inoapp.command.CancelRunCommand
 import org.springframework.http.HttpStatus
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*
 @CrossOrigin(origins = ["http://localhost:4200"])
 class BackofficeRunController(
     private val runFacade: RunFacade,
+    private val runTrackFacade: RunTrackFacade,
 ) {
 
     @PostMapping(value = ["/add_control_point"])
@@ -52,4 +54,13 @@ class BackofficeRunController(
     )
 
     private fun CancelRunRequest.toCommand() = CancelRunCommand(runId, reporter)
+
+    @PostMapping(value = ["/tracks"])
+    fun fetchBatchTracks(@RequestBody request: BatchTrackFetchRequest): ResponseEntity<*> {
+        val response = runTrackFacade.getRunTracks(request.runTrackIds)
+        return ResponseEntity.ok(response)
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class BatchTrackFetchRequest(val runTrackIds: List<String>)
 }

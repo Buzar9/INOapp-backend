@@ -1,9 +1,12 @@
 package com.mbuzarewicz.inoapp
 
 import com.mbuzarewicz.inoapp.command.AppendRunTrackPointsCommand
+import com.mbuzarewicz.inoapp.domain.model.RunTrack
+import com.mbuzarewicz.inoapp.domain.model.RunTrackSegment
 import com.mbuzarewicz.inoapp.domain.service.GpsNoiseFilterService
 import com.mbuzarewicz.inoapp.domain.service.RunTrackSegmentService
 import com.mbuzarewicz.inoapp.domain.service.RunTrackStatsCalculator
+import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunReadModelRepository
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunRepository
 import com.mbuzarewicz.inoapp.persistence.repository.DefaultRunTrackRepository
 import com.mbuzarewicz.inoapp.query.GetRunTrackQuery
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Component
 class RunTrackFacade(
     private val runTrackRepository: DefaultRunTrackRepository,
     private val runRepository: DefaultRunRepository,
+    private val runReadModelRepository: DefaultRunReadModelRepository,
     private val gpsNoiseFilterService: GpsNoiseFilterService,
 ) {
     private val statsCalculator = RunTrackStatsCalculator()
@@ -23,6 +27,11 @@ class RunTrackFacade(
 
     fun uploadRunTrackBatch(command: AppendRunTrackPointsCommand): Map<String, Any> {
         runTrackRepository.appendPoints(command.runId, command.points)
+
+        val runReadModel = runReadModelRepository.getByRunId(command.runId)
+        if (runReadModel != null && runReadModel.runTrackId == null) {
+            runReadModelRepository.save(runReadModel.copy(runTrackId = command.runId))
+        }
 
         return mapOf(
             "uploadedCount" to command.points.size,
@@ -36,14 +45,25 @@ class RunTrackFacade(
         val runTrack = runTrackRepository.findByRunId(runId) ?: return null
         val duration = run.getMainTime()
 
-        val filteredPoints = gpsNoiseFilterService.filterPoints(runTrack.points)
-
-        val segments = segmentService.createSegments(filteredPoints)
+        val segments = createSegments(runTrack)
         val stats = statsCalculator.calculateStats(segments, duration)
-
         val segmentsView = segments.map { viewSegmentMapper.mapToView(it) }
-
         return RunTrackView(runId, segmentsView, stats)
+    }
+
+    fun getRunTracks(runTrackIds: List<String>): List<RunTrackView> {
+        val tracks = runTrackRepository.findAllByRunIds(runTrackIds)
+
+        return tracks.map { runTrack ->
+            val segments = createSegments(runTrack)
+            val segmentsView = segments.map { viewSegmentMapper.mapToView(it) }
+            RunTrackView(runTrack.id, segmentsView, null)
+        }
+    }
+
+    private fun createSegments(runTrack: RunTrack): List<RunTrackSegment> {
+        val filteredPoints = gpsNoiseFilterService.filterPoints(runTrack.points)
+        return segmentService.createSegments(filteredPoints)
     }
 }
 

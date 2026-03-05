@@ -1,5 +1,6 @@
 package com.mbuzarewicz.inoapp.persistence.repository
 
+import com.google.cloud.firestore.FieldPath
 import com.google.cloud.firestore.Firestore
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRunTrack
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRunTrackPoint
@@ -49,6 +50,21 @@ class FirestoreRunTrackRepository(
             .get()
             .get()
             .toObject(PersistableRunTrack::class.java)
+    }
+
+    fun findAllByRunIds(runIds: List<String>): List<PersistableRunTrack> {
+        if (runIds.isEmpty()) return emptyList()
+
+        return runIds.chunked(30).flatMap { chunk ->
+            val documentRefs = chunk.map { firestore.collection(collectionName).document(it) }
+            firestore
+                .collection(collectionName)
+                .whereIn(FieldPath.documentId(), documentRefs)
+                .get()
+                .get()
+                .documents
+                .mapNotNull { it.toObject(PersistableRunTrack::class.java) }
+        }
     }
 }
 

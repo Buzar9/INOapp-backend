@@ -22,5 +22,9 @@ class DefaultRunTrackRepository(
         val persistableTrack = repository.findByRunId(runId) ?: return null
         return trackMapper.mapToDomainEntity(persistableTrack)
     }
+
+    fun findAllByRunIds(runIds: List<String>): List<RunTrack> {
+        return repository.findAllByRunIds(runIds).map { trackMapper.mapToDomainEntity(it) }
+    }
 }
 
