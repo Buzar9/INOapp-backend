@@ -18,19 +18,19 @@ class BackofficeCategoryController(
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.OK)
     fun create(
-        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: CreateCategoryRequest
     ) {
-        categoryFacade.create(request.toCommand(competitionId))
+        categoryFacade.create(request.toCommand())
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class CreateCategoryRequest(
         val name: String,
+        val competitionId: String,
         val routeId: String,
     )
 
-    private fun CreateCategoryRequest.toCommand(competitionId: String) =
+    private fun CreateCategoryRequest.toCommand() =
         CreateCategoryCommand(name = name, competitionId = competitionId, routeId = routeId)
 
     @PostMapping("/delete")
@@ -47,11 +47,16 @@ class BackofficeCategoryController(
     private fun DeleteCategoryRequest.toCommand() =
         DeleteCategoryCommand(categoryId)
 
-    @GetMapping
+    @PostMapping
     fun get(
-        @RequestHeader("X-Competition-Id") competitionId: String
+        @RequestBody request: CompetitionIdRequest
     ): ResponseEntity<*> {
-        val results = categoryFacade.getAllActive(competitionId)
+        val results = categoryFacade.getAllActive(request.competitionId)
         return ResponseEntity.status(200).body(results)
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class CompetitionIdRequest(
+        val competitionId: String
+    )
 }

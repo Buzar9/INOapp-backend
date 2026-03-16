@@ -21,18 +21,18 @@ class BackofficeCompetitionUnitController(
     @PostMapping(value = ["/add"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun add(
-        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: AddCompetitionUnitRequest
     ) {
-        competitionUnitFacade.add(request.toCommand(competitionId))
+        competitionUnitFacade.add(request.toCommand())
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class AddCompetitionUnitRequest(
+        val competitionId: String,
         val name: String,
     )
 
-    private fun AddCompetitionUnitRequest.toCommand(competitionId: String) = AddCompetitionUnitCommand(competitionId, name)
+    private fun AddCompetitionUnitRequest.toCommand() = AddCompetitionUnitCommand(competitionId, name)
 
     @PostMapping(value = ["/edit"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -65,11 +65,16 @@ class BackofficeCompetitionUnitController(
 
     private fun DeleteCompetitionUnitRequest.toCommand() = DeleteCompetitionUnitCommand(id)
 
-    @GetMapping
+    @PostMapping
     fun getAll(
-        @RequestHeader("X-Competition-Id") competitionId: String
+        @RequestBody request: CompetitionIdRequest
     ): ResponseEntity<*> {
-        val competitionUnits = competitionUnitFacade.getAllForCompetition(GetAllCompetitionUnitQuery(competitionId))
+        val competitionUnits = competitionUnitFacade.getAllForCompetition(GetAllCompetitionUnitQuery(request.competitionId))
         return ResponseEntity.status(200).body(competitionUnits)
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class CompetitionIdRequest(
+        val competitionId: String
+    )
 }

@@ -31,7 +31,6 @@ class BackofficeBackgroundMapController(
 
     @PostMapping("/add", consumes = ["multipart/form-data"])
     fun uploadGeoTiff(
-        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestPart("file") file: MultipartFile,
         @RequestPart("metadata") request: AddBackgroundMapRequest
     ): ResponseEntity<*> {
@@ -43,7 +42,7 @@ class BackofficeBackgroundMapController(
             return ResponseEntity.badRequest().body(ErrorResponse(400, "Bad Request", "Dozwolony jest tylko format GeoTIFF (image/tiff)."))
         }
 
-        val command = request.toCommand(competitionId)
+        val command = request.toCommand()
 
         val tempDir = Paths.get(System.getProperty("java.io.tmpdir"), "geotiff_uploads")
         Files.createDirectories(tempDir)
@@ -62,25 +61,31 @@ class BackofficeBackgroundMapController(
         val name: String,
         val minZoom: Int,
         val maxZoom: Int,
+        val competitionId: String,
     )
 
-    private fun AddBackgroundMapRequest.toCommand(competitionId: String) = AddBackgroundMapCommand(name, minZoom, maxZoom, competitionId)
+    private fun AddBackgroundMapRequest.toCommand() = AddBackgroundMapCommand(name, minZoom, maxZoom, competitionId)
 
     @PostMapping("/options")
     fun getAllOptions(
-        @RequestHeader("X-Competition-Id") competitionId: String
+        @RequestBody request: CompetitionIdRequest
     ): ResponseEntity<*> {
-        val options = backgroundMapFacade.getBackgroundMapOptions(GetAllBackgroundMapOptionsQuery(competitionId))
+        val options = backgroundMapFacade.getBackgroundMapOptions(GetAllBackgroundMapOptionsQuery(request.competitionId))
         return ResponseEntity.status(200).body(options)
     }
 
     @PostMapping
     fun getAll(
-        @RequestHeader("X-Competition-Id") competitionId: String
+        @RequestBody request: CompetitionIdRequest
     ): ResponseEntity<*> {
-        val backgroundMaps = backgroundMapFacade.getAll(GetAllBackgroundMapQuery(competitionId))
+        val backgroundMaps = backgroundMapFacade.getAll(GetAllBackgroundMapQuery(request.competitionId))
         return ResponseEntity.status(200).body(backgroundMaps)
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class CompetitionIdRequest(
+        val competitionId: String
+    )
 
     @PostMapping("/delete")
     fun delete(

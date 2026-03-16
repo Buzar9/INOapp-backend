@@ -21,10 +21,9 @@ class BackofficeRouteController(
     @PostMapping(value = ["/create"])
     @ResponseStatus(HttpStatus.OK)
     fun addRoute(
-        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody addRouteRequest: AddRouteRequest
     ): ResponseEntity<*> {
-        val newRoute = routeFacade.addRoute(addRouteRequest.toCommand(competitionId))
+        val newRoute = routeFacade.addRoute(addRouteRequest.toCommand())
         return ResponseEntity.status(200).body(newRoute)
     }
 
@@ -32,9 +31,10 @@ class BackofficeRouteController(
     data class AddRouteRequest(
         val name: String,
         val backgroundMapId: String,
+        val competitionId: String,
     )
 
-    private fun AddRouteRequest.toCommand(competitionId: String) = AddRouteCommand(name, backgroundMapId, competitionId)
+    private fun AddRouteRequest.toCommand() = AddRouteCommand(name, backgroundMapId, competitionId)
 
     @PostMapping(value = ["/edit_route"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -56,19 +56,19 @@ class BackofficeRouteController(
     @PostMapping(value = ["/delete_route"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteRoute(
-        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: DeleteRouteRequest
     ): ResponseEntity<*> {
-        val updatedRoute = routeFacade.deactivate(request.toCommand(competitionId))
+        val updatedRoute = routeFacade.deactivate(request.toCommand())
         return ResponseEntity.status(200).body(updatedRoute)
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class DeleteRouteRequest(
         val routeId: String,
+        val competitionId: String,
     )
 
-    private fun DeleteRouteRequest.toCommand(competitionId: String) = DeleteRouteCommand(competitionId, routeId)
+    private fun DeleteRouteRequest.toCommand() = DeleteRouteCommand(competitionId, routeId)
 
 //    dodo zrobic walidacje, że może być tylko jeden start i jedna meta
     @PostMapping(value = ["/add_station"])
@@ -150,25 +150,30 @@ class BackofficeRouteController(
 
     @PostMapping
     fun getAll(
-        @RequestHeader("X-Competition-Id") competitionId: String
+        @RequestBody request: CompetitionIdRequest
     ): ResponseEntity<*> {
-        val routesViews = routeFacade.getAllView(GetAllRoutesQuery(competitionId))
+        val routesViews = routeFacade.getAllView(GetAllRoutesQuery(request.competitionId))
         return ResponseEntity.status(200).body(routesViews)
     }
 
     @PostMapping(value = ["/options"])
     fun getRouteOptions(
-        @RequestHeader("X-Competition-Id") competitionId: String
+        @RequestBody request: CompetitionIdRequest
     ): ResponseEntity<*> {
-        val routesViews = routeFacade.getRouteOptions(GetAllRoutesQuery(competitionId))
+        val routesViews = routeFacade.getRouteOptions(GetAllRoutesQuery(request.competitionId))
         return ResponseEntity.status(200).body(routesViews)
     }
 
     @PostMapping(value = ["/consolidated_routes"])
     fun getConsolidatedRouteView(
-        @RequestHeader("X-Competition-Id") competitionId: String
+        @RequestBody request: CompetitionIdRequest
     ): ResponseEntity<*> {
-        val consolidatedRouteView = routeFacade.getConsolidatedStationView(GetConsolidatedRouteViewQuery(competitionId))
+        val consolidatedRouteView = routeFacade.getConsolidatedStationView(GetConsolidatedRouteViewQuery(request.competitionId))
         return ResponseEntity.status(200).body(consolidatedRouteView)
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class CompetitionIdRequest(
+        val competitionId: String
+    )
 }

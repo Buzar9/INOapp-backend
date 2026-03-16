@@ -36,20 +36,20 @@ class BackofficeCompetitionController(
 
     @PostMapping("/competition/results")
     fun getResults(
-        @RequestHeader("X-Competition-Id") competitionId: String,
         @RequestBody request: GetResultsRequest
     ): ResponseEntity<*> {
-        val query = request.toQuery(competitionId)
+        val query = request.toQuery()
         val results = raceResultViewFacade.getResults(query)
         return ResponseEntity.status(200).body(results)
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class GetResultsRequest(
+        val competitionId: String,
         val filter: Map<String, List<String>>?,
         val pageNumber: Long
     )
 
-    private fun GetResultsRequest.toQuery(competitionId: String) =
+    private fun GetResultsRequest.toQuery() =
         GetFilteredCompetitionResultsQuery(competitionId, filter, pageNumber)
 }
