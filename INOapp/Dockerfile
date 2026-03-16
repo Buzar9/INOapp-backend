@@ -27,4 +27,4 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-Dspring.main.lazy-initialization=true", "-jar", "app.jar"]

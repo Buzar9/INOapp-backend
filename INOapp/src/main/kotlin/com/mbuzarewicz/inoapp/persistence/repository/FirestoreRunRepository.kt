@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRun
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class FirestoreRunRepository(
@@ -16,7 +17,7 @@ class FirestoreRunRepository(
     fun getByRunId(id: String): PersistableRun? {
         val documentReference = firestore.collection(collectionName).document(id)
         val future = documentReference.get()
-        val document = future.get()
+        val document = future.get(15, TimeUnit.SECONDS)
 
         return if (document.exists()) {
             document.toObject(PersistableRun::class.java)
@@ -26,7 +27,7 @@ class FirestoreRunRepository(
     }
 
     fun getAll(): List<PersistableRun> {
-        val documents = firestore.collection(collectionName).get().get().documents
+        val documents = firestore.collection(collectionName).get().get(15, TimeUnit.SECONDS).documents
         return documents.map { it.toObject(PersistableRun::class.java) }
     }
 

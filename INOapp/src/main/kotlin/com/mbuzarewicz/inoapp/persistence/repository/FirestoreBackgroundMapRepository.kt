@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistableBackgroundMap
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class FirestoreBackgroundMapRepository(
@@ -21,7 +22,7 @@ class FirestoreBackgroundMapRepository(
         val query = firestore.collection(collectionName)
             .whereEqualTo("competitionId", competitionId)
             .get()
-        val snapshot = query.get()
+        val snapshot = query.get(15, TimeUnit.SECONDS)
         return snapshot.documents.mapNotNull { it.toObject(PersistableBackgroundMap::class.java) }
     }
 
@@ -31,13 +32,13 @@ class FirestoreBackgroundMapRepository(
         val query = firestore.collection(collectionName)
             .whereIn(com.google.cloud.firestore.FieldPath.documentId(), documentRefs)
             .get()
-        val snapshot = query.get()
+        val snapshot = query.get(15, TimeUnit.SECONDS)
         return snapshot.documents.mapNotNull { it.toObject(PersistableBackgroundMap::class.java) }
     }
 
     fun getById(backgroundMapId: String): PersistableBackgroundMap? {
         val documentReference = firestore.collection(collectionName).document(backgroundMapId)
-        val snapshot = documentReference.get().get()
+        val snapshot = documentReference.get().get(15, TimeUnit.SECONDS)
         return snapshot.toObject(PersistableBackgroundMap::class.java)
     }
 }

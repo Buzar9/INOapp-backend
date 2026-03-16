@@ -4,6 +4,7 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistablePatternStation
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class FirestoreStationRepository(
@@ -13,7 +14,7 @@ class FirestoreStationRepository(
     private val collectionName = "station"
 
     fun findAll(): List<PersistablePatternStation> {
-        val documents = firestore.collection(collectionName).get().get().documents
+        val documents = firestore.collection(collectionName).get().get(15, TimeUnit.SECONDS).documents
         return documents.map { it.toObject(PersistablePatternStation::class.java) }
     }
 

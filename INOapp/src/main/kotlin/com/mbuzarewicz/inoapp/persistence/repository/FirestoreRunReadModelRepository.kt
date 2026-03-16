@@ -6,6 +6,7 @@ import com.google.cloud.firestore.Query
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRunReadModel
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class FirestoreRunReadModelRepository(
@@ -17,7 +18,7 @@ class FirestoreRunReadModelRepository(
     fun getByRunId(id: String): PersistableRunReadModel? {
         val documentReference = firestore.collection(collectionName).document(id)
         val future = documentReference.get()
-        val document = future.get()
+        val document = future.get(15, TimeUnit.SECONDS)
 
         return if (document.exists()) {
             document.toObject(PersistableRunReadModel::class.java)
@@ -29,7 +30,7 @@ class FirestoreRunReadModelRepository(
     fun getAll(competitionId: String): List<PersistableRunReadModel> {
         val documents = firestore.collection(collectionName)
             .whereEqualTo("competitionId", competitionId)
-            .get().get().documents
+            .get().get(15, TimeUnit.SECONDS).documents
         return documents.map { it.toObject(PersistableRunReadModel::class.java) }
     }
 
@@ -49,7 +50,7 @@ class FirestoreRunReadModelRepository(
         }
 
         val future = query.get()
-        val snapshot = future.get()
+        val snapshot = future.get(15, TimeUnit.SECONDS)
 
         return snapshot.documents.map { it.toObject(PersistableRunReadModel::class.java) }
     }

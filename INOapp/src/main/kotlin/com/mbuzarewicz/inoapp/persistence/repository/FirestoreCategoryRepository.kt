@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistableCategory
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class FirestoreCategoryRepository(
@@ -15,7 +16,7 @@ class FirestoreCategoryRepository(
     fun getActiveById(id: String): PersistableCategory? {
         val query = firestore.collection(collectionName).document(id)
         val future = query.get()
-        val document = future.get()
+        val document = future.get(15, TimeUnit.SECONDS)
 
         return document.toObject(PersistableCategory::class.java)?.takeIf { it.active }
     }
@@ -25,7 +26,7 @@ class FirestoreCategoryRepository(
             .whereEqualTo("competitionId", competitionId)
             .whereEqualTo("active", true)
         val future = query.get()
-        val snapshot = future.get()
+        val snapshot = future.get(15, TimeUnit.SECONDS)
 
         return snapshot.documents.map { it.toObject(PersistableCategory::class.java) }
     }

@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRunTrack
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRunTrackPoint
 import org.springframework.stereotype.Component
+import java.util.concurrent.TimeUnit
 
 @Component
 class FirestoreRunTrackRepository(
@@ -17,7 +18,7 @@ class FirestoreRunTrackRepository(
             .collection(collectionName)
             .document(track.id)
             .set(track)
-            .get()
+            .get(15, TimeUnit.SECONDS)
     }
 
     fun appendPoints(id: String, newPoints: List<PersistableRunTrackPoint>) {
@@ -26,7 +27,7 @@ class FirestoreRunTrackRepository(
             .document(id)
 
         firestore.runTransaction { transaction ->
-            val snapshot = transaction.get(docRef).get()
+            val snapshot = transaction.get(docRef).get(15, TimeUnit.SECONDS)
             val existingTrack = snapshot.toObject(PersistableRunTrack::class.java)
 
             val updatedPoints = if (existingTrack != null) {
@@ -40,7 +41,7 @@ class FirestoreRunTrackRepository(
 
             transaction.set(docRef, updatedTrack)
             null
-        }.get()
+        }.get(15, TimeUnit.SECONDS)
     }
 
     fun findByRunId(runId: String): PersistableRunTrack? {
@@ -48,7 +49,7 @@ class FirestoreRunTrackRepository(
             .collection(collectionName)
             .document(runId)
             .get()
-            .get()
+            .get(15, TimeUnit.SECONDS)
             .toObject(PersistableRunTrack::class.java)
     }
 
@@ -61,7 +62,7 @@ class FirestoreRunTrackRepository(
                 .collection(collectionName)
                 .whereIn(FieldPath.documentId(), documentRefs)
                 .get()
-                .get()
+                .get(15, TimeUnit.SECONDS)
                 .documents
                 .mapNotNull { it.toObject(PersistableRunTrack::class.java) }
         }

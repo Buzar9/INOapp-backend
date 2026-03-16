@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistableCompetitionUnit
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class FirestoreCompetitionUnitRepository(
@@ -26,7 +27,7 @@ class FirestoreCompetitionUnitRepository(
     fun getAll(competitionId: String): List<PersistableCompetitionUnit> {
         val query = firestore.collection(collectionName).whereEqualTo("competitionId", competitionId)
         val future = query.get()
-        val snapshot = future.get()
+        val snapshot = future.get(15, TimeUnit.SECONDS)
 
         return snapshot.documents.map { it.toObject(PersistableCompetitionUnit::class.java) }
     }
@@ -35,14 +36,14 @@ class FirestoreCompetitionUnitRepository(
         if (competitionIds.isEmpty()) return emptyList()
         val query = firestore.collection(collectionName).whereIn("competitionId", competitionIds)
         val future = query.get()
-        val snapshot = future.get()
+        val snapshot = future.get(15, TimeUnit.SECONDS)
         return snapshot.documents.mapNotNull { it.toObject(PersistableCompetitionUnit::class.java) }
     }
 
     fun findById(id: String): PersistableCompetitionUnit? {
         val query = firestore.collection(collectionName).document(id)
         val future = query.get()
-        val snapshot = future.get()
+        val snapshot = future.get(15, TimeUnit.SECONDS)
 
         return if (snapshot.exists()) {
             snapshot.toObject(PersistableCompetitionUnit::class.java)

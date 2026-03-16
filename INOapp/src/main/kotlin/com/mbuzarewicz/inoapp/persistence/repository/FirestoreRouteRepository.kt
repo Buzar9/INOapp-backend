@@ -6,6 +6,7 @@ import com.google.cloud.firestore.Firestore
 import com.google.cloud.firestore.SetOptions
 import com.mbuzarewicz.inoapp.persistence.model.PersistableRoute
 import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
 class FirestoreRouteRepository(
@@ -16,7 +17,7 @@ class FirestoreRouteRepository(
     fun findActiveById(id: String): PersistableRoute? {
         val query = firestore.collection(collectionName).document(id)
         val future = query.get()
-        val document = future.get()
+        val document = future.get(15, TimeUnit.SECONDS)
 
         return document.toObject(PersistableRoute::class.java)?.takeIf { it.active }
     }
@@ -26,7 +27,7 @@ class FirestoreRouteRepository(
             .whereEqualTo("competitionId", competitionId)
             .whereEqualTo("active", true)
         val future = query.get()
-        val snapshot = future.get()
+        val snapshot = future.get(15, TimeUnit.SECONDS)
 
         return snapshot.documents.map { it.toObject(PersistableRoute::class.java) }
     }
@@ -38,7 +39,7 @@ class FirestoreRouteRepository(
             .whereIn(FieldPath.documentId(), documentRefs)
             .whereEqualTo("active", true)
             .get()
-        val snapshot = query.get()
+        val snapshot = query.get(15, TimeUnit.SECONDS)
         return snapshot.documents.mapNotNull { it.toObject(PersistableRoute::class.java) }
     }
 
