@@ -30,7 +30,7 @@ class TilesSlicerService {
                 "-z", "$minZoom-$maxZoom",
                 "--webviewer=none",
                 "--s_srs", "EPSG:$epsg",
-                "-r", "cubicspline",
+                "-r", "average",
                 "-p", "mercator",
                 inputFilePath,
                 outputDir.toString()
