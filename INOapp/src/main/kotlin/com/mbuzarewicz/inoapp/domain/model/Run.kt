@@ -3,7 +3,6 @@ package com.mbuzarewicz.inoapp.domain.model
 import com.mbuzarewicz.inoapp.RunStatus
 import com.mbuzarewicz.inoapp.RunStatus.*
 import com.mbuzarewicz.inoapp.command.AddControlPointCommand
-import com.mbuzarewicz.inoapp.command.CancelRunCommand
 import com.mbuzarewicz.inoapp.domain.model.RuleType.IS_WITHIN_TOLERANCE_RANGE
 import com.mbuzarewicz.inoapp.domain.model.RuleValidationResult.INSUFFICIENT_DATA
 import com.mbuzarewicz.inoapp.domain.model.StationType.*
@@ -128,7 +127,7 @@ class Run private constructor(
 
     private fun start(station: Station, location: Location?, timestamp: Long?, reporter: String): RunStartedEvent? {
         if (status != INITIATED) return null
-        if (controlPoints.any { it.stationId == station.id }) return null
+        if (isDuplicate(station)) return null
 
         if (timestamp == null) return null
 
@@ -162,7 +161,7 @@ class Run private constructor(
     private fun addCheckpoint(station: Station, location: Location?, timestamp: Long?, reporter: String): AddedCheckpointEvent? {
 //       dodo tu jest kupa zabezpieczen ze ten user jest na srtingu
         if (status != STARTED && reporter.uppercase() == "USER") return null
-        if (controlPoints.any { it.stationId == station.id }) return null
+        if (isDuplicate(station)) return null
 
         val lastControlStationTimestamp = controlPoints.maxByOrNull { it.timestamp }?.timestamp
         val ruleValidation = controlPointRuleValidator.validate(
@@ -193,7 +192,7 @@ class Run private constructor(
 
     private fun finish(station: Station, location: Location?, timestamp: Long?, reporter: String): RunFinishedEvent? {
         if (status != STARTED) return null
-
+        if (isDuplicate(station)) return null
         if (timestamp == null) return null
 
         val ruleValidation =
@@ -225,6 +224,8 @@ class Run private constructor(
             mainTime = getMainTime().value,
         )
     }
+
+    private fun isDuplicate(station: Station) = controlPoints.any { it.stationId == station.id }
 
 //    dodo to  chyba powinno w agregacie pozostac prawdziwa wartoscia a w read modelu dodac losowa
     private fun getValidLocationOrRandom(ruleValidation: List<RuleValidation>, location: Location): Location {

@@ -4,7 +4,7 @@ import com.mbuzarewicz.inoapp.domain.model.RunTrackSegment
 import com.mbuzarewicz.inoapp.domain.model.RunTrackStats
 import com.mbuzarewicz.inoapp.domain.model.vo.Distance
 import com.mbuzarewicz.inoapp.domain.model.vo.Duration
-import com.mbuzarewicz.inoapp.domain.model.vo.DurationUnit.HOURS
+import com.mbuzarewicz.inoapp.domain.model.vo.DurationUnit.SECONDS
 
 class RunTrackStatsCalculator() {
     private val velocityCalculator = VelocityCalculator()
@@ -19,7 +19,7 @@ class RunTrackStatsCalculator() {
 
         return RunTrackStats(
             totalDistance = totalDistance,
-            totalDuration = duration.convertUnit(HOURS),
+            totalDuration = duration.convertUnit(SECONDS),
             averageSpeed = avgSpeed,
         )
     }
